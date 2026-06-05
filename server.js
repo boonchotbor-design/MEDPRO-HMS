@@ -185,7 +185,7 @@ app.post('/api/quotation', async (req, res) => {
         };
 
         // Send Push Message to LINE
-        if (patient.lineUserId && !patient.lineUserId.startsWith('USER_LINE_ID')) {
+        if (patient.lineUserId) {
             await client.pushMessage({
                 to: patient.lineUserId,
                 messages: [flexMessage]
@@ -195,7 +195,11 @@ app.post('/api/quotation', async (req, res) => {
         res.json({ success: true, message: "ออกใบเสนอราคาเรียบร้อย", debug_data: flexMessage });
     } catch (error) {
         console.error('Error in quotation process:', error);
-        res.status(500).json({ success: false, message: "เกิดข้อผิดพลาดในระบบ" });
+        if (error.response) {
+            console.error('Error response data:', error.response.data);
+            console.error('Error response status:', error.response.status);
+        }
+        res.status(500).json({ success: false, message: "เกิดข้อผิดพลาดในระบบ", error: error.message });
     }
 });
 
