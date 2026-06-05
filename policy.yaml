@@ -7,9 +7,9 @@ on_http_request:
         config:
           provider: google
 
-  # 2. Deny access if NOT @acme.com AND NOT /webhook
+  # 2. Deny access if NOT @gmail.com AND NOT /webhook
   - expressions:
     - "!req.url.path.startsWith('/webhook')"
-    - "!actions.ngrok.oauth.identity.email.endsWith('@acme.com')"
+    - "!actions.ngrok.oauth.identity.email.endsWith('@gmail.com')"
     actions:
     - type: deny
