@@ -1,0 +1,15 @@
+on_http_request:
+  # 1. Require Google OAuth ONLY if the path is NOT /webhook
+  - expressions:
+      - "!req.url.path.startsWith('/webhook')"
+    actions:
+      - type: oauth
+        config:
+          provider: google
+
+  # 2. Deny access if NOT @acme.com AND NOT /webhook
+  - expressions:
+    - "!req.url.path.startsWith('/webhook')"
+    - "!actions.ngrok.oauth.identity.email.endsWith('@acme.com')"
+    actions:
+    - type: deny

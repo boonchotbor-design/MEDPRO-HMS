@@ -1,0 +1,8 @@
+version: 3
+agent:
+  authtoken: 3Ej1y9chWL6qI8Z2wwhqwCmnNGe_3wJWXomb2fKFM3exes437
+tunnels:
+  medpro-hms:
+    proto: http
+    addr: 3000
+    host_header: localhost:3000

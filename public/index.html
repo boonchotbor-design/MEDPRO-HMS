@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จองนัดหมายแพทย์ - MEDPRO CLINIC</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #06C755;
+            --bg-color: #f0f2f5;
+            --text-color: #2c3e50;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Sarabun';
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .liff-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background-color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .header h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header .close-btn { color: #999; font-size: 1.2rem; cursor: pointer; }
+
+        .content { padding: 20px; flex: 1; }
+        
+        .step-indicator {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+        .step-indicator span.active { color: var(--primary-color); font-weight: bold; }
+
+        .form-group { margin-bottom: 25px; }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #34495e;
+        }
+        
+        .radio-group { display: flex; flex-direction: column; gap: 12px; }
+        .radio-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .radio-item:hover { border-color: var(--primary-color); background: #fafffb; }
+        .radio-item input { margin-right: 15px; accent-color: var(--primary-color); width: 18px; height: 18px; }
+        .radio-item span { font-size: 0.95rem; }
+
+        .date-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            background: #f9f9f9;
+        }
+        
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .time-btn {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .time-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+        .time-btn.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            background: white;
+            position: sticky;
+            bottom: 0;
+        }
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            width: 100%;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(6, 199, 85, 0.2);
+        }
+        .btn-submit:active { transform: scale(0.98); }
+
+        .status-msg {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #95a5a6;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="liff-container">
+    <div class="header">
+        <h2>🏥 MEDPRO CLINIC</h2>
+        <div class="close-btn" onclick="liff.closeWindow()"><i class="fas fa-times"></i></div>
+    </div>
+    
+    <div class="content">
+        <div class="step-indicator">
+            <span class="active">ขั้นตอน: (1) เลือกหมอ</span>
+            <span>-></span>
+            <span id="step2Label">[2] วัน/เวลา</span>
+        </div>
+
+        <div class="form-group">
+            <label>👨‍⚕️ แพทย์ที่ต้องการนัดหมาย:</label>
+            <div class="radio-group">
+                <label class="radio-item">
+                    <input type="radio" name="doctor" value="พญ. ศิริพร (ผิวหนัง & เลเซอร์)" checked>
+                    <span>พญ. ศิริพร (ผิวหนัง & เลเซอร์)</span>
+                </label>
+                <label class="radio-item">
+                    <input type="radio" name="doctor" value="นพ. สมชาย (โรคทั่วไป)">
+                    <span>นพ. สมชาย (โรคทั่วไป)</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>📅 เลือกวันที่คุณสะดวก:</label>
+            <input type="date" id="date" class="date-input">
+        </div>
+
+        <div class="form-group">
+            <label>🕒 เลือกเวลาที่ยังว่างอยู่:</label>
+            <div class="time-grid" id="timeGrid">
+                <div class="time-btn" onclick="selectTime(this)">09:00</div>
+                <div class="time-btn" onclick="selectTime(this)">10:00</div>
+                <div class="time-btn" onclick="selectTime(this)">11:00</div>
+                <div class="time-btn" onclick="selectTime(this)">13:30</div>
+                <div class="time-btn" onclick="selectTime(this)">14:30</div>
+                <div class="time-btn" onclick="selectTime(this)">15:30</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <button class="btn-submit" onclick="submitBooking()">📅 ยืนยันการจองนัดหมาย</button>
+        <p class="status-msg" id="status">กำลังโหลดระบบ LINE...</p>
+    </div>
+</div>
+
+<script>
+    let selectedTime = null;
+
+    function selectTime(el) {
+        document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedTime = el.innerText;
+        document.getElementById('step2Label').classList.add('active');
+    }
+
+    async function main() {
+        try {
+            // For production, the LIFF ID should be fetched or injected. 
+            // We'll try to find it from a script or use a placeholder.
+            const liffId = "your_liff_id_here"; 
+            
+            await liff.init({ liffId: liffId });
+            
+            if (!liff.isLoggedIn()) {
+                liff.login();
+            } else {
+                document.getElementById('status').innerText = 'เชื่อมต่อ LINE สำเร็จ';
+            }
+        } catch (error) {
+            console.error('LIFF Error:', error);
+            document.getElementById('status').innerText = 'กรุณาเปิดผ่านแอป LINE';
+        }
+    }
+    main();
+
+    function submitBooking() {
+        const doctor = document.querySelector('input[name="doctor"]:checked').value;
+        const date = document.getElementById('date').value;
+        const time = selectedTime;
+
+        if(!date) return alert('กรุณาเลือกวันที่ต้องการนัดหมายครับ');
+        if(!time) return alert('กรุณาเลือกเวลาที่ต้องการนัดหมายครับ');
+
+        const messageText = `📌 ยืนยันการจองนัดหมาย\n👨‍⚕️ แพทย์: ${doctor}\n📅 วันที่: ${date}\n⏰ เวลา: ${time} น.`;
+
+        liff.sendMessages([
+            {
+                type: 'text',
+                text: messageText
+            }
+        ]).then(() => {
+            alert('จองนัดหมายสำเร็จ!');
+            liff.closeWindow();
+        }).catch((err) => {
+            console.error('Error sending message:', err);
+            alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
+        });
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').setAttribute('min', today);
+</script>
+</body>
+</html>

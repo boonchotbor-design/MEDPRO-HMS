@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDPRO Admin - ระบบจัดการโรงพยาบาล</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --admin-primary: #2c3e50;
+            --admin-accent: #3498db;
+            --admin-success: #27ae60;
+            --admin-warning: #f39c12;
+            --bg-light: #f4f7f6;
+            --sidebar-width: 260px;
+        }
+        body {
+            font-family: 'Inter', -apple-system, 'Sarabun', sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            color: #333;
+        }
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--admin-primary);
+            color: white;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .sidebar h2 { 
+            font-size: 1.1rem; 
+            margin-bottom: 30px; 
+            color: #ecf0f1; 
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-item { 
+            padding: 12px 25px; 
+            margin-bottom: 5px; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            color: #bdc3c7;
+        }
+        .nav-item:hover, .nav-item.active { 
+            background: rgba(52, 152, 219, 0.2); 
+            color: white;
+            border-left: 4px solid var(--admin-accent);
+        }
+        .nav-item.active {
+            background: var(--admin-accent);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .top-bar {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .top-bar .admin-info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .top-bar h1 { margin: 0; font-size: 1.3rem; color: var(--admin-primary); }
+
+        .breadcrumb { font-size: 0.85rem; color: #7f8c8d; margin-bottom: 20px; }
+        
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card h3 { margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; color: var(--admin-primary); }
+
+        /* Search Section */
+        .search-container { display: flex; gap: 10px; align-items: center; }
+        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 0.9rem; }
+        button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-search { background: var(--admin-accent); color: white; }
+        .btn-search:hover { background: #2980b9; }
+
+        /* Patient Info Section */
+        .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .info-item label { display: block; font-size: 0.75rem; color: #95a5a6; margin-bottom: 5px; text-transform: uppercase; }
+        .info-item span { font-weight: 600; font-size: 0.95rem; }
+        .info-item.allergy span { color: #e74c3c; }
+
+        /* Billing Table */
+        .table-container { margin-top: 20px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; background: #f8f9fa; padding: 12px; color: #7f8c8d; font-size: 0.85rem; border-bottom: 2px solid #eee; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        
+        .total-section { 
+            margin-top: 20px; 
+            text-align: right; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            border-radius: 8px;
+        }
+        .total-amount { font-size: 1.4rem; font-weight: bold; color: var(--admin-success); }
+
+        /* Action Buttons */
+        .action-group { display: flex; gap: 10px; margin-top: 25px; flex-wrap: wrap; }
+        .btn-save { background: #95a5a6; color: white; }
+        .btn-quote { background: var(--admin-accent); color: white; }
+        .btn-confirm { background: var(--admin-primary); color: white; }
+        .btn-line { background: #06C755; color: white; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2><i class="fas fa-hospital"></i> MEDPRO HMS</h2>
+    <div class="nav-item"><i class="fas fa-home"></i> หน้าแรก</div>
+    <div class="nav-item"><i class="fas fa-user-injured"></i> ทะเบียนผู้ป่วย</div>
+    <div class="nav-item active"><i class="fas fa-file-invoice-dollar"></i> การเงิน & ออกบิล</div>
+    <div class="nav-item"><i class="fas fa-calendar-alt"></i> จัดการคิวนัดหมาย</div>
+    <div class="nav-item"><i class="fas fa-chart-line"></i> รายงานยอดขาย</div>
+    <div class="nav-item"><i class="fas fa-cog"></i> ตั้งค่าระบบ</div>
+</div>
+
+<div class="main-content">
+    <div class="top-bar">
+        <h1>ระบบการเงินและการนัดหมาย</h1>
+        <div class="admin-info">
+            <i class="fas fa-user-circle"></i> เจ้าหน้าที่: <strong>พญ. วารุณี</strong>
+        </div>
+    </div>
+
+    <div class="breadcrumb">
+        📄 หน้าหลัก > ระบบการเงินและการนัดหมาย
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-search"></i> 🔎 ค้นหาผู้ป่วยเก่า (ดึงข้อมูลประวัติอัตโนมัติ)</h3>
+        <div class="search-container">
+            <input type="text" id="hnInput" placeholder="คีย์ชื่อ-สกุล / เบอร์โทร หรือ HN (ลองใช้ HN-690023)...">
+            <button class="btn-search" onclick="searchPatient()"><i class="fas fa-sync-alt"></i> ดึงข้อมูล</button>
+        </div>
+
+        <div id="patientSection" style="display:none; margin-top: 30px; border-top: 1px dashed #eee; pt: 20px;">
+            <p style="color: #7f8c8d; font-size: 0.8rem; margin-bottom: 15px;">[ ข้อมูลผู้ป่วยที่ดึงมาจากฐานข้อมูลเดิม ]</p>
+            <div class="info-grid">
+                <div class="info-item"><label>HN:</label> <span id="infoHN"></span></div>
+                <div class="info-item"><label>ชื่อ-สกุล:</label> <span id="infoName"></span></div>
+                <div class="info-item"><label>เบอร์โทร:</label> <span id="infoPhone"></span></div>
+                <div class="info-item"><label>โรคประจำตัว:</label> <span id="infoConditions"></span></div>
+                <div class="info-item allergy"><label>แพ้ยา:</label> <span id="infoAllergy"></span></div>
+                <div class="info-item"><label>สิทธิ์การรักษา:</label> <span id="infoRights"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" id="billingSection" style="display:none;">
+        <h3><i class="fas fa-file-alt"></i> 📑 รายการค่าใช้จ่ายในใบเสนอราคา / ใบเสร็จ</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th style="width: 100px;">รหัสสินค้า</th>
+                        <th>รายการรักษา / ยา</th>
+                        <th style="text-align:right;">ราคา (บาท)</th>
+                        <th style="text-align:center;">จำนวน</th>
+                        <th style="text-align:center;">ส่วนลด</th>
+                        <th style="text-align:right;">รวม (บาท)</th>
+                    </tr>
+                </thead>
+                <tbody id="billingItems">
+                    <!-- Items will be added here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="total-section">
+            <div style="color: #7f8c8d; font-size: 0.9rem;">ยอดรวมทั้งสิ้น:</div>
+            <div class="total-amount"><span id="totalAmount">0</span> บาท</div>
+        </div>
+
+        <div class="action-group">
+            <button class="btn-save"><i class="fas fa-save"></i> บันทึกร่าง</button>
+            <button class="btn-quote"><i class="fas fa-file-pdf"></i> ออกใบเสนอราคา</button>
+            <button class="btn-confirm"><i class="fas fa-check-circle"></i> ยืนยันรับเงิน/ออกใบเสร็จ</button>
+            <button class="btn-line" onclick="sendToLine()"><i class="fab fa-line"></i> ส่งเข้า LINE</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentPatient = null;
+    let billingItems = [
+        { id: 'TR-004', name: 'ตรวจสุขภาพประจำปี (Package A)', price: 2500, qty: 1, discount: '10%' },
+        { id: 'MED-102', name: 'ยาลดความดันโลหิต (Amlodipine 5mg)', price: 300, qty: 2, discount: '0%' }
+    ];
+
+    async function searchPatient() {
+        const hn = document.getElementById('hnInput').value;
+        const btn = document.querySelector('.btn-search');
+        if(!hn) return alert('กรุณาระบุ HN หรือข้อมูลค้นหา');
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังโหลด...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`/api/patient/${hn}`);
+            const result = await res.json();
+
+            if(result.success) {
+                currentPatient = result.data;
+                currentPatient.hn = hn;
+
+                document.getElementById('infoHN').innerText = hn;
+                document.getElementById('infoName').innerText = currentPatient.name;
+                document.getElementById('infoPhone').innerText = currentPatient.phone;
+                document.getElementById('infoConditions').innerText = currentPatient.conditions;
+                document.getElementById('infoAllergy').innerText = currentPatient.allergy || 'ไม่มี';
+                document.getElementById('infoRights').innerText = currentPatient.rights || 'ไม่ระบุ';
+                
+                document.getElementById('patientSection').style.display = 'block';
+                showBilling();
+            } else {
+                alert('ไม่พบข้อมูลผู้ป่วย (ลองใช้ HN-690023)');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+        } finally {
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> ดึงข้อมูล';
+            btn.disabled = false;
+        }
+    }
+
+    function calculateRowTotal(item) {
+        const subtotal = item.price * item.qty;
+        const discountVal = parseInt(item.discount) || 0;
+        return subtotal * (1 - discountVal / 100);
+    }
+
+    function showBilling() {
+        const tbody = document.getElementById('billingItems');
+        tbody.innerHTML = '';
+        let total = 0;
+
+        billingItems.forEach((item, index) => {
+            const rowTotal = calculateRowTotal(item);
+            total += rowTotal;
+
+            const row = `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><code>${item.id}</code></td>
+                    <td>${item.name}</td>
+                    <td style="text-align:right;">${item.price.toLocaleString()}</td>
+                    <td style="text-align:center;">${item.qty}</td>
+                    <td style="text-align:center;">${item.discount}</td>
+                    <td style="text-align:right; font-weight: bold;">${rowTotal.toLocaleString()}</td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+
+        document.getElementById('totalAmount').innerText = total.toLocaleString();
+        document.getElementById('billingSection').style.display = 'block';
+    }
+
+    async function sendToLine() {
+        if(!currentPatient) return;
+        const total = billingItems.reduce((sum, item) => sum + calculateRowTotal(item), 0);
+        
+        try {
+            const res = await fetch('/api/quotation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    hn: currentPatient.hn,
+                    items: billingItems,
+                    totalAmount: total
+                })
+            });
+
+            const result = await res.json();
+            if(result.success) {
+                alert('ส่งใบเสนอราคาเรียบร้อยแล้ว!');
+            } else {
+                alert('เกิดข้อผิดพลาด: ' + result.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
+        }
+    }
+</script>
+</body>
+</html>
