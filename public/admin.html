@@ -926,28 +926,28 @@
             <!-- TAB: Dashboard -->
             <div id="tab-dashboard" class="tab-content active">
                 <div class="stats-grid">
-                    <div class="stat-box blue">
+                    <div class="stat-box blue" onclick="switchTab('search-visit')" style="cursor: pointer;">
                         <div class="stat-info">
                             <h4>เวชระเบียนทั้งหมด</h4>
                             <p id="statTotalPatients">0</p>
                         </div>
                         <div class="stat-icon"><i class="fas fa-users"></i></div>
                     </div>
-                    <div class="stat-box green">
+                    <div class="stat-box green" onclick="switchTab('search-visit')" style="cursor: pointer;">
                         <div class="stat-info">
                             <h4>ผู้ป่วยส่งตรวจวันนี้</h4>
                             <p id="statTodayVisits">0</p>
                         </div>
                         <div class="stat-icon"><i class="fas fa-user-check"></i></div>
                     </div>
-                    <div class="stat-box orange">
+                    <div class="stat-box orange" onclick="switchTab('merge')" style="cursor: pointer;">
                         <div class="stat-info">
                             <h4>การยุบรวมแฟ้ม (Merge)</h4>
                             <p id="statMergeCount">0</p>
                         </div>
                         <div class="stat-icon"><i class="fas fa-compress-arrows-alt"></i></div>
                     </div>
-                    <div class="stat-box red">
+                    <div class="stat-box red" onclick="switchTab('print-card')" style="cursor: pointer;">
                         <div class="stat-info">
                             <h4>ประวัติพิมพ์ใบแทน</h4>
                             <p id="statPrintCount">0</p>
