@@ -1907,9 +1907,9 @@
                     let ageText = "ไม่พบข้อมูล";
                     if (p.dob && p.dob.includes('/')) {
                         const parts = p.dob.split('/');
-                        const yearB.E = parseInt(parts[2]);
-                        const currentYearB.E = new Date().getFullYear() + 543;
-                        ageText = `${currentYearB.E - yearB.E} ปี`;
+                        const yearBE = parseInt(parts[2]);
+                        const currentYearBE = new Date().getFullYear() + 543;
+                        ageText = `${currentYearBE - yearBE} ปี`;
                     }
                     document.getElementById('hudAge').innerText = ageText;
                     document.getElementById('hudGender').innerText = p.gender;
