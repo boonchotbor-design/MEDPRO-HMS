@@ -153,10 +153,18 @@ const db = {
     },
     saveQuotation: async (data) => {
         try {
-            console.log('Quotation saved (Mock):', data);
+            console.log('Saving quotation...', data);
+            if (GOOGLE_SCRIPT_URL) {
+                const response = await axios.post(GOOGLE_SCRIPT_URL, data, {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                console.log('Google Apps Script Response:', response.data);
+            } else {
+                console.log('Google Apps Script URL not configured. (Logged as Mock)');
+            }
             return { success: true };
         } catch (error) {
-            console.error('DB saveQuotation Error:', error);
+            console.error('DB saveQuotation Error:', error.message);
             return { success: false };
         }
     },
@@ -613,7 +621,13 @@ app.post('/api/quotation', async (req, res) => {
         const patient = patientResult.data;
 
         // Save to Google Sheets
-        await db.saveQuotation({ hn, patientName: patient.name, totalAmount, items: JSON.stringify(items) });
+        await db.saveQuotation({ 
+            hn, 
+            patientName: patient.name, 
+            totalAmount, 
+            items: JSON.stringify(items),
+            lineUserId: patient.lineUserId 
+        });
 
         // Flex Message for Quotation
         const flexMessage = {
