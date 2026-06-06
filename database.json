@@ -35,6 +35,31 @@
       "deathDoctor": "",
       "active": true,
       "photo": "https://api.dicebear.com/7.x/adventurer/svg?seed=Somsak"
+    },
+    "HN-690002": {
+      "idCard": "1234567890123",
+      "title": "นาย",
+      "name": "วิชัย",
+      "surname": "ดีพร้อม",
+      "gender": "ชาย",
+      "dob": "01/01/2530",
+      "phone": "0899999999",
+      "address": "456/78 ต.หมากแข้ง อ.เมือง จ.อุดรธานี 41000",
+      "rights": "บัตรทอง (30 บาท)",
+      "bloodGroup": "AB",
+      "maritalStatus": "โสด",
+      "emergencyContact": "นางสมศรี ดีพร้อม",
+      "relationship": "มารดา",
+      "emergencyPhone": "0888888888",
+      "conditions": "ไม่มี",
+      "allergy": "ไม่มี",
+      "isConfidential": false,
+      "confidentialRole": "staff",
+      "isDeceased": false,
+      "hn": "HN-690002",
+      "active": false,
+      "photo": "https://api.dicebear.com/7.x/adventurer/svg?seed=วิชัย",
+      "mergedInto": "HN-690023"
     }
   },
   "visits": [
@@ -62,9 +87,63 @@
         }
       ],
       "status": "เสร็จสิ้น"
+    },
+    {
+      "visitId": "V-100002",
+      "hn": "HN-690023",
+      "patientName": "คุณสมศักดิ์ รักดี",
+      "date": "6/6/2569",
+      "time": "10:45",
+      "doctor": "นพ. สมชาย (โรคทั่วไป)",
+      "triage": "มาตรวจความดันและรับยาตามนัด สัญญาณชีพเสถียร",
+      "rights": [
+        "บัตรทอง (30 บาท)",
+        "ประกันสุขภาพเอกชน"
+      ],
+      "diagnoses": [
+        {
+          "code": "I10",
+          "name": "Essential (primary) hypertension (โรคความดันโลหิตสูง)"
+        }
+      ],
+      "procedures": [
+        {
+          "code": "89.52",
+          "name": "Electrocardiogram (ตรวจคลื่นไฟฟ้าหัวใจ - ECG)"
+        }
+      ],
+      "status": "รอตรวจ"
     }
   ],
-  "logs": [],
-  "mergeLogs": [],
+  "logs": [
+    {
+      "hn": "HN-690002",
+      "timestamp": "2026-06-06T03:45:09.438Z",
+      "action": "ลงทะเบียนใหม่",
+      "details": "สร้างแฟ้มเวชระเบียนใหม่โดยเจ้าหน้าที่",
+      "officer": "พญ. วารุณี",
+      "docRef": "-"
+    },
+    {
+      "hn": "HN-690023",
+      "timestamp": "2026-06-06T03:45:09.460Z",
+      "action": "ยุบรวมประวัติ",
+      "details": "ยุบรวม HN: HN-690002 (นายวิชัย ดีพร้อม) เข้ามา มีข้อมูลตรวจรักษาโอนย้ายมา 0 รายการ",
+      "officer": "พญ. วารุณี รักษ์ไทย",
+      "docRef": "ใบรับคำร้องการยุบรวมแฟ้มประวัติคนไข้ซ้ำซ้อน เลขที่ 06/2569"
+    }
+  ],
+  "mergeLogs": [
+    {
+      "timestamp": "2026-06-06T03:45:09.460Z",
+      "masterHn": "HN-690023",
+      "secondaryHn": "HN-690002",
+      "masterName": "คุณสมศักดิ์ รักดี",
+      "secondaryName": "นายวิชัย ดีพร้อม",
+      "officer": "พญ. วารุณี รักษ์ไทย",
+      "docRef": "ใบรับคำร้องการยุบรวมแฟ้มประวัติคนไข้ซ้ำซ้อน เลขที่ 06/2569",
+      "visitsMerged": 0
+    }
+  ],
   "printLogs": []
 }
