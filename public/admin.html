@@ -3,321 +3,2758 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEDPRO Admin - ระบบจัดการโรงพยาบาล</title>
+    <title>MEDPRO HMS - ระบบบริหารจัดการโรงพยาบาลและเวชระเบียน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --admin-primary: #2c3e50;
-            --admin-accent: #3498db;
-            --admin-success: #27ae60;
-            --admin-warning: #f39c12;
-            --bg-light: #f4f7f6;
-            --sidebar-width: 260px;
+            --primary: #0f766e; /* Teal 700 */
+            --primary-light: #14b8a6; /* Teal 500 */
+            --primary-bg: #f0fdfa; /* Teal 50 */
+            --sidebar-bg: #0f172a; /* Slate 900 */
+            --sidebar-hover: #1e293b; /* Slate 800 */
+            --dark-text: #1e293b;
+            --light-text: #64748b;
+            --white: #ffffff;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --success: #10b981; /* Emerald 500 */
+            --warning: #f59e0b; /* Amber 500 */
+            --danger: #ef4444; /* Red 500 */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        body {
-            font-family: 'Inter', -apple-system, 'Sarabun', sans-serif;
-            background-color: var(--bg-light);
+
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Sarabun', sans-serif;
+            background-color: #f8fafc;
+            color: var(--dark-text);
             display: flex;
             height: 100vh;
-            color: #333;
+            overflow: hidden;
         }
-        /* Sidebar */
+
+        /* Sidebar Navigation */
         .sidebar {
-            width: var(--sidebar-width);
-            background: var(--admin-primary);
-            color: white;
-            padding: 20px 0;
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            color: var(--white);
             display: flex;
             flex-direction: column;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 24px 0;
+            flex-shrink: 0;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+            z-index: 10;
         }
-        .sidebar h2 { 
-            font-size: 1.1rem; 
-            margin-bottom: 30px; 
-            color: #ecf0f1; 
-            padding: 0 20px;
+
+        .brand {
+            padding: 0 24px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand i {
+            font-size: 1.8rem;
+            color: var(--primary-light);
+            filter: drop-shadow(0 0 8px rgba(20, 184, 166, 0.5));
+        }
+
+        .brand h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--white), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand span {
+            font-size: 0.65rem;
+            background: var(--primary-light);
+            color: var(--sidebar-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 0 12px;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .nav-item i {
+            font-size: 1.15rem;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover {
+            background-color: var(--sidebar-hover);
+            color: var(--white);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(15, 118, 110, 0.3);
+        }
+
+        .nav-item.active i {
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .sidebar-footer {
+            padding: 24px;
+            border-top: 1px solid #1e293b;
+            color: #64748b;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        /* Main Workspace */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: #f1f5f9;
+        }
+
+        .topbar {
+            background-color: var(--white);
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 32px;
+            border-bottom: 1px solid var(--gray-200);
+            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .topbar-title h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar-img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: var(--primary-bg);
+            border: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-info .name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .user-info .role {
+            font-size: 0.75rem;
+            color: var(--light-text);
+        }
+
+        /* Scrollable Content Container */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+        }
+
+        /* Tab Content Control */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Utility Elements: Premium Cards */
+        .card {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: var(--shadow);
+            padding: 28px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--primary-light);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 12px;
+        }
+
+        .card h3 i {
+            color: var(--primary-light);
+        }
+
+        /* Dashboard Statistics Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 5px solid var(--primary-light);
+            transition: var(--transition);
+        }
+
+        .stat-box:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-box.blue { border-left-color: #3498db; }
+        .stat-box.green { border-left-color: var(--success); }
+        .stat-box.orange { border-left-color: var(--warning); }
+        .stat-box.red { border-left-color: var(--danger); }
+
+        .stat-info h4 {
+            font-size: 0.8rem;
+            color: var(--light-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-info p {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+            color: var(--primary-light);
+        }
+
+        .stat-box.blue .stat-icon { color: #3498db; background-color: #ebf5fb; }
+        .stat-box.green .stat-icon { color: var(--success); background-color: #e8f8f5; }
+        .stat-box.orange .stat-icon { color: var(--warning); background-color: #fef5e7; }
+        .stat-box.red .stat-icon { color: var(--danger); background-color: #fde8e8; }
+
+        /* Form Design Components */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 18px;
+        }
+
+        .col-1 { grid-column: span 1; }
+        .col-2 { grid-column: span 2; }
+        .col-3 { grid-column: span 3; }
+        .col-4 { grid-column: span 4; }
+        .col-6 { grid-column: span 6; }
+        .col-8 { grid-column: span 8; }
+        .col-9 { grid-column: span 9; }
+        .col-12 { grid-column: span 12; }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            outline: none;
+            transition: var(--transition);
+            background-color: var(--white);
+            color: var(--dark-text);
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+        }
+
+        .form-group.required label::after {
+            content: ' *';
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        /* Custom buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+            box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(15, 118, 110, 0.25);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-200);
+            color: var(--dark-text);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--gray-300);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--white);
+        }
+
+        .btn-warning:hover {
+            background-color: #d97706;
+        }
+
+        .btn-line {
+            background-color: #06C755;
+            color: var(--white);
+            box-shadow: 0 4px 10px rgba(6, 199, 85, 0.2);
+        }
+
+        .btn-line:hover {
+            background-color: #05b04b;
+        }
+
+        /* Checkbox Switch & Toggles */
+        .switch-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .switch-box {
+            width: 44px;
+            height: 22px;
+            background-color: var(--gray-300);
+            border-radius: 100px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .switch-box::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: var(--white);
+            top: 2px;
+            left: 2px;
+            transition: var(--transition);
+        }
+
+        input[type="checkbox"]:checked + .switch-box {
+            background-color: var(--primary-light);
+        }
+
+        input[type="checkbox"]:checked + .switch-box::after {
+            left: 24px;
+        }
+
+        /* Tables & Lists */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            background-color: var(--white);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--gray-100);
+            color: #475569;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 14px 18px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.9rem;
+            color: var(--dark-text);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+
+        /* Badge design */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background-color: #e6fcf5; color: #0ca678; }
+        .badge-warning { background-color: #fff9db; color: #f08c00; }
+        .badge-danger { background-color: #fff5f5; color: #f03e3e; }
+        .badge-info { background-color: #e7f5ff; color: #1c7ed6; }
+
+        /* Search Section UI */
+        .search-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--light-text);
+        }
+
+        .search-input-wrapper input {
+            padding-left: 44px !important;
+            height: 48px;
+            font-size: 0.95rem;
+        }
+
+        /* Instant Suggestions Dropdown */
+        .search-suggestions {
+            position: absolute;
+            top: 52px;
+            left: 0;
+            width: 100%;
+            background-color: var(--white);
+            border-radius: var(--radius-sm);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid var(--gray-200);
+            z-index: 100;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            border-bottom: 1px solid var(--gray-100);
+            transition: var(--transition);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--primary-bg);
+        }
+
+        .suggestion-item .p-name {
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .suggestion-item .p-hn {
+            font-size: 0.8rem;
+            color: var(--primary);
+            background-color: var(--primary-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* Patient Detail HUD */
+        .patient-hud {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .hud-photo-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hud-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: var(--radius-md);
+            border: 4px solid var(--white);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            object-fit: cover;
+            background-color: var(--gray-100);
+        }
+
+        .hud-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px 24px;
+        }
+
+        .hud-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hud-item label {
+            font-size: 0.75rem;
+            color: var(--light-text);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .hud-item span {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .alert-warning-banner {
+            background-color: #fff9db;
+            border-left: 5px solid var(--warning);
+            color: #856404;
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        .nav-item { 
-            padding: 12px 25px; 
-            margin-bottom: 5px; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.95rem;
-            color: #bdc3c7;
-        }
-        .nav-item:hover, .nav-item.active { 
-            background: rgba(52, 152, 219, 0.2); 
-            color: white;
-            border-left: 4px solid var(--admin-accent);
-        }
-        .nav-item.active {
-            background: var(--admin-accent);
+
+        /* Autocomplete results dropdown */
+        .autocomplete-dropdown {
+            position: absolute;
+            background-color: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow);
+            z-index: 10;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            top: 64px;
+            left: 0;
+            display: none;
         }
 
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 25px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
+        .autocomplete-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--gray-100);
         }
-        .top-bar {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 10px;
+
+        .autocomplete-item:hover {
+            background-color: var(--primary-bg);
+            color: var(--primary);
+        }
+
+        .selected-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .selected-tag {
+            background-color: var(--primary-bg);
+            color: var(--primary);
+            border: 1px solid var(--primary-light);
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+
+        .selected-tag i {
+            cursor: pointer;
+            color: var(--danger);
+        }
+
+        /* Multi Right Selector */
+        .rights-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .right-checkbox-card {
+            border: 1.5px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .right-checkbox-card:hover {
+            border-color: var(--primary-light);
+        }
+
+        .right-checkbox-card.selected {
+            border-color: var(--primary);
+            background-color: var(--primary-bg);
+        }
+
+        .right-checkbox-card input {
+            width: auto;
+        }
+
+        /* Billing items table within Medical Visit */
+        .billing-calculator {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--gray-100);
+            border-radius: var(--radius-md);
+        }
+
+        .billing-total-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--gray-300);
         }
-        .top-bar .admin-info {
-            font-size: 0.9rem;
-            color: #666;
+
+        /* Popup Notification */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
         }
-        .top-bar h1 { margin: 0; font-size: 1.3rem; color: var(--admin-primary); }
 
-        .breadcrumb { font-size: 0.85rem; color: #7f8c8d; margin-bottom: 20px; }
-        
-        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .card h3 { margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; color: var(--admin-primary); }
-
-        /* Search Section */
-        .search-container { display: flex; gap: 10px; align-items: center; }
-        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 0.9rem; }
-        button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .btn-search { background: var(--admin-accent); color: white; }
-        .btn-search:hover { background: #2980b9; }
-
-        /* Patient Info Section */
-        .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .info-item label { display: block; font-size: 0.75rem; color: #95a5a6; margin-bottom: 5px; text-transform: uppercase; }
-        .info-item span { font-weight: 600; font-size: 0.95rem; }
-        .info-item.allergy span { color: #e74c3c; }
-
-        /* Billing Table */
-        .table-container { margin-top: 20px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; background: #f8f9fa; padding: 12px; color: #7f8c8d; font-size: 0.85rem; border-bottom: 2px solid #eee; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-        
-        .total-section { 
-            margin-top: 20px; 
-            text-align: right; 
-            padding: 20px; 
-            background: #f8f9fa; 
-            border-radius: 8px;
+        .modal.open {
+            opacity: 1;
+            pointer-events: auto;
         }
-        .total-amount { font-size: 1.4rem; font-weight: bold; color: var(--admin-success); }
 
-        /* Action Buttons */
-        .action-group { display: flex; gap: 10px; margin-top: 25px; flex-wrap: wrap; }
-        .btn-save { background: #95a5a6; color: white; }
-        .btn-quote { background: var(--admin-accent); color: white; }
-        .btn-confirm { background: var(--admin-primary); color: white; }
-        .btn-line { background: #06C755; color: white; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        .modal-content {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            transform: scale(0.9);
+            transition: var(--transition);
+        }
 
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            background: #e8f5e9;
-            color: #2e7d32;
+        .modal.open .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 12px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--light-text);
+        }
+
+        /* Quick warning toast */
+        .warning-toast {
+            background-color: #fee2e2;
+            border-left: 5px solid var(--danger);
+            color: #991b1b;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: none;
         }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <h2><i class="fas fa-hospital"></i> MEDPRO HMS</h2>
-    <div class="nav-item"><i class="fas fa-home"></i> หน้าแรก</div>
-    <div class="nav-item"><i class="fas fa-user-injured"></i> ทะเบียนผู้ป่วย</div>
-    <div class="nav-item active"><i class="fas fa-file-invoice-dollar"></i> การเงิน & ออกบิล</div>
-    <div class="nav-item"><i class="fas fa-calendar-alt"></i> จัดการคิวนัดหมาย</div>
-    <div class="nav-item"><i class="fas fa-chart-line"></i> รายงานยอดขาย</div>
-    <div class="nav-item"><i class="fas fa-cog"></i> ตั้งค่าระบบ</div>
-</div>
-
-<div class="main-content">
-    <div class="top-bar">
-        <h1>ระบบการเงินและการนัดหมาย</h1>
-        <div class="admin-info">
-            <i class="fas fa-user-circle"></i> เจ้าหน้าที่: <strong>พญ. วารุณี</strong>
-        </div>
-    </div>
-
-    <div class="breadcrumb">
-        📄 หน้าหลัก > ระบบการเงินและการนัดหมาย
-    </div>
-
-    <div class="card">
-        <h3><i class="fas fa-search"></i> 🔎 ค้นหาผู้ป่วยเก่า (ดึงข้อมูลประวัติอัตโนมัติ)</h3>
-        <div class="search-container">
-            <input type="text" id="hnInput" placeholder="คีย์ชื่อ-สกุล / เบอร์โทร หรือ HN (ลองใช้ HN-690023)...">
-            <button class="btn-search" onclick="searchPatient()"><i class="fas fa-sync-alt"></i> ดึงข้อมูล</button>
-        </div>
-
-        <div id="patientSection" style="display:none; margin-top: 30px; border-top: 1px dashed #eee; pt: 20px;">
-            <p style="color: #7f8c8d; font-size: 0.8rem; margin-bottom: 15px;">[ ข้อมูลผู้ป่วยที่ดึงมาจากฐานข้อมูลเดิม ]</p>
-            <div class="info-grid">
-                <div class="info-item"><label>HN:</label> <span id="infoHN"></span></div>
-                <div class="info-item"><label>ชื่อ-สกุล:</label> <span id="infoName"></span></div>
-                <div class="info-item"><label>เบอร์โทร:</label> <span id="infoPhone"></span></div>
-                <div class="info-item"><label>โรคประจำตัว:</label> <span id="infoConditions"></span></div>
-                <div class="info-item allergy"><label>แพ้ยา:</label> <span id="infoAllergy"></span></div>
-                <div class="info-item"><label>สิทธิ์การรักษา:</label> <span id="infoRights"></span></div>
+    <!-- Sidebar Menu -->
+    <div class="sidebar">
+        <div class="brand">
+            <i class="fas fa-notes-medical"></i>
+            <div>
+                <h2>MEDPRO HMS</h2>
+                <span>MOPH Standard</span>
             </div>
         </div>
-    </div>
-
-    <div class="card" id="billingSection" style="display:none;">
-        <h3><i class="fas fa-file-alt"></i> 📑 รายการค่าใช้จ่ายในใบเสนอราคา / ใบเสร็จ</h3>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 50px;">#</th>
-                        <th style="width: 100px;">รหัสสินค้า</th>
-                        <th>รายการรักษา / ยา</th>
-                        <th style="text-align:right;">ราคา (บาท)</th>
-                        <th style="text-align:center;">จำนวน</th>
-                        <th style="text-align:center;">ส่วนลด</th>
-                        <th style="text-align:right;">รวม (บาท)</th>
-                    </tr>
-                </thead>
-                <tbody id="billingItems">
-                    <!-- Items will be added here -->
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="total-section">
-            <div style="color: #7f8c8d; font-size: 0.9rem;">ยอดรวมทั้งสิ้น:</div>
-            <div class="total-amount"><span id="totalAmount">0</span> บาท</div>
-        </div>
-
-        <div class="action-group">
-            <button class="btn-save"><i class="fas fa-save"></i> บันทึกร่าง</button>
-            <button class="btn-quote"><i class="fas fa-file-pdf"></i> ออกใบเสนอราคา</button>
-            <button class="btn-confirm"><i class="fas fa-check-circle"></i> ยืนยันรับเงิน/ออกใบเสร็จ</button>
-            <button class="btn-line" onclick="sendToLine()"><i class="fab fa-line"></i> ส่งเข้า LINE</button>
+        <ul class="nav-list">
+            <li class="nav-item active" onclick="switchTab('dashboard')">
+                <i class="fas fa-chart-pie"></i> แผงควบคุม (Dashboard)
+            </li>
+            <li class="nav-item" onclick="switchTab('search-visit')">
+                <i class="fas fa-search-plus"></i> ค้นหา & ส่งตรวจ/ออกบิล
+            </li>
+            <li class="nav-item" onclick="switchTab('register')">
+                <i class="fas fa-id-card-alt"></i> ลงทะเบียนเวชระเบียนใหม่
+            </li>
+            <li class="nav-item" onclick="switchTab('merge')">
+                <i class="fas fa-compress-arrows-alt"></i> ยุบรวมแฟ้มประวัติ (Merge)
+            </li>
+            <li class="nav-item" onclick="switchTab('mass-casualty')">
+                <i class="fas fa-ambulance"></i> ลงทะเบียนอุบัติเหตุหมู่
+            </li>
+            <li class="nav-item" onclick="switchTab('print-card')">
+                <i class="fas fa-print"></i> พิมพ์ใบแทนเวชระเบียน
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>โรงพยาบาลเวชระเบียนจำลอง</p>
+            <p style="font-size: 0.7rem; margin-top: 4px;">v2.1.0 MOPH Compatible</p>
         </div>
     </div>
-</div>
 
-<script>
-    let currentPatient = null;
-    let billingItems = [
-        { id: 'TR-004', name: 'ตรวจสุขภาพประจำปี (Package A)', price: 2500, qty: 1, discount: '10%' },
-        { id: 'MED-102', name: 'ยาลดความดันโลหิต (Amlodipine 5mg)', price: 300, qty: 2, discount: '0%' }
-    ];
+    <!-- Main Workspace -->
+    <div class="workspace">
+        <div class="topbar">
+            <div class="topbar-title">
+                <h1 id="pageTitle">แผงควบคุมหลัก (Dashboard)</h1>
+            </div>
+            <div class="user-profile">
+                <div class="avatar-img">WR</div>
+                <div class="user-info">
+                    <span class="name">พญ. วารุณี รักษ์ไทย</span>
+                    <span class="role">เจ้าหน้าที่ห้องเวชระเบียน</span>
+                </div>
+            </div>
+        </div>
 
-    async function searchPatient() {
-        const hn = document.getElementById('hnInput').value;
-        const btn = document.querySelector('.btn-search');
-        if(!hn) return alert('กรุณาระบุ HN หรือข้อมูลค้นหา');
+        <div class="content-area">
+            
+            <!-- TAB: Dashboard -->
+            <div id="tab-dashboard" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-box blue">
+                        <div class="stat-info">
+                            <h4>เวชระเบียนทั้งหมด</h4>
+                            <p id="statTotalPatients">0</p>
+                        </div>
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    </div>
+                    <div class="stat-box green">
+                        <div class="stat-info">
+                            <h4>ผู้ป่วยส่งตรวจวันนี้</h4>
+                            <p id="statTodayVisits">0</p>
+                        </div>
+                        <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                    </div>
+                    <div class="stat-box orange">
+                        <div class="stat-info">
+                            <h4>การยุบรวมแฟ้ม (Merge)</h4>
+                            <p id="statMergeCount">0</p>
+                        </div>
+                        <div class="stat-icon"><i class="fas fa-compress-arrows-alt"></i></div>
+                    </div>
+                    <div class="stat-box red">
+                        <div class="stat-info">
+                            <h4>ประวัติพิมพ์ใบแทน</h4>
+                            <p id="statPrintCount">0</p>
+                        </div>
+                        <div class="stat-icon"><i class="fas fa-print"></i></div>
+                    </div>
+                </div>
 
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังโหลด...';
-        btn.disabled = true;
+                <div class="card">
+                    <h3><i class="fas fa-history"></i> รายการส่งตรวจผู้ป่วยล่าสุดวันนี้</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>เวลา</th>
+                                    <th>HN</th>
+                                    <th>ชื่อ-นามสกุล</th>
+                                    <th>สิทธิ์การรักษา</th>
+                                    <th>แพทย์/ห้องตรวจ</th>
+                                    <th>สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayVisitsTableBody">
+                                <!-- Dynamic rows -->
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--light-text);">กำลังโหลดข้อมูลการส่งตรวจ...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-        try {
-            const res = await fetch(`/api/patient/${hn}`);
-            const result = await res.json();
+            <!-- TAB: Search & Visit -->
+            <div id="tab-search-visit" class="tab-content">
+                <div class="card">
+                    <h3><i class="fas fa-search"></i> ค้นหาประวัติผู้ป่วยเก่า (HN / ชื่อ-สกุล / เลขประจำตัวประชาชน / ที่อยู่)</h3>
+                    <div class="search-row">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="patientSearchInput" placeholder="พิมพ์คำที่ต้องการค้นหา เช่น สมศักดิ์ หรือ HN-690023..." oninput="handleSearchInput(this.value)">
+                            <div class="search-suggestions" id="searchSuggestions">
+                                <!-- suggestions loaded dynamically -->
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="triggerSearch()"><i class="fas fa-sync"></i> โหลดรายละเอียด</button>
+                    </div>
+                </div>
 
-            if(result.success) {
-                currentPatient = result.data;
-                currentPatient.hn = hn;
+                <!-- Patient Profile Viewer Grid -->
+                <div id="patientProfileCard" class="card" style="display: none;">
+                    <h3><i class="fas fa-id-card"></i> แฟ้มประวัติสุขภาพผู้ป่วยอิเล็กทรอนิกส์ (EHR Card)</h3>
+                    <div class="patient-hud">
+                        <div class="hud-photo-area">
+                            <img src="" id="hudPhoto" class="hud-avatar" alt="Patient Avatar">
+                            <div id="hudConfidentialBadge"></div>
+                            <div id="hudDeceasedBadge"></div>
+                        </div>
+                        <div>
+                            <div class="hud-grid">
+                                <div class="hud-item"><label>HN:</label><span id="hudHN" style="color: var(--primary); font-size: 1.1rem;"></span></div>
+                                <div class="hud-item"><label>เลขประจำตัวประชาชน:</label><span id="hudIdCard"></span></div>
+                                <div class="hud-item"><label>ชื่อ - สกุล:</label><span id="hudName"></span></div>
+                                <div class="hud-item"><label>วันเกิด:</label><span id="hudDob"></span></div>
+                                <div class="hud-item"><label>อายุ:</label><span id="hudAge"></span></div>
+                                <div class="hud-item"><label>เพศ:</label><span id="hudGender"></span></div>
+                                <div class="hud-item"><label>หมู่โลหิต:</label><span id="hudBloodGroup">-</span></div>
+                                <div class="hud-item"><label>สถานภาพสมรส:</label><span id="hudMarital">-</span></div>
+                                <div class="hud-item"><label>สัญชาติ/เชื้อชาติ/ศาสนา:</label><span id="hudNationality">-</span></div>
+                                <div class="hud-item"><label>อาชีพ:</label><span id="hudOccupation">-</span></div>
+                                <div class="hud-item"><label>เบอร์โทรศัพท์มือถือ:</label><span id="hudPhone"></span></div>
+                                <div class="hud-item"><label>โรคประจำตัว:</label><span id="hudConditions"></span></div>
+                                <div class="hud-item allergy"><label>ประวัติแพ้ยา:</label><span id="hudAllergy" style="color: var(--danger); font-weight: bold;"></span></div>
+                                <div class="hud-item" style="grid-column: span 2;"><label>ที่อยู่ปัจจุบัน:</label><span id="hudAddress"></span></div>
+                            </div>
 
-                document.getElementById('infoHN').innerText = hn;
-                document.getElementById('infoName').innerText = currentPatient.name;
-                document.getElementById('infoPhone').innerText = currentPatient.phone;
-                document.getElementById('infoConditions').innerText = currentPatient.conditions;
-                document.getElementById('infoAllergy').innerText = currentPatient.allergy || 'ไม่มี';
-                document.getElementById('infoRights').innerText = currentPatient.rights || 'ไม่ระบุ';
+                            <div style="margin-top: 24px; border-top: 1px solid var(--gray-200); padding-top: 18px; display: flex; gap: 12px; flex-wrap: wrap;">
+                                <button class="btn btn-secondary" onclick="checkRightsNHSO()"><i class="fas fa-shield-alt"></i> ตรวจสอบสิทธิ์ สปสช. (NHSO)</button>
+                                <button class="btn btn-primary" onclick="openVisitModal()"><i class="fas fa-stethoscope"></i> บันทึกส่งตรวจเวชปฏิบัติ / ห้องแพทย์</button>
+                                <button class="btn btn-warning" onclick="openEditPatientModal()"><i class="fas fa-edit"></i> แก้ไขเวชระเบียน/บันทึกการเปลี่ยนชื่อ</button>
+                                <button class="btn btn-secondary" style="background-color: #e2e8f0;" onclick="openPrintReplacementModal()"><i class="fas fa-print"></i> สั่งพิมพ์ใบแทนเวชระเบียน</button>
+                            </div>
+                            <div id="nhsoRightsResult" style="margin-top: 12px; display: none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Visit and Log History -->
+                    <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <div>
+                            <h4 style="font-size: 0.95rem; margin-bottom: 12px; font-weight: 600;"><i class="fas fa-notes-medical" style="color: var(--primary);"></i> ประวัติการเข้ารับการตรวจรักษา (Visits)</h4>
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>วันที่</th>
+                                            <th>แพทย์/ห้องตรวจ</th>
+                                            <th>การวินิจฉัย (ICD-10)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="hudVisitHistoryBody">
+                                        <tr>
+                                            <td colspan="3" style="text-align: center; color: var(--light-text); font-size: 0.8rem;">ไม่พบประวัติการส่งตรวจ</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 0.95rem; margin-bottom: 12px; font-weight: 600;"><i class="fas fa-history" style="color: var(--warning);"></i> บันทึกความเปลี่ยนแปลงประวัติและชื่อ-สกุลเดิม</h4>
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>วันที่/เวลา</th>
+                                            <th>กิจกรรม</th>
+                                            <th>รายละเอียดการแก้ไข</th>
+                                            <th>อ้างอิงเอกสาร</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="hudChangeLogBody">
+                                        <tr>
+                                            <td colspan="4" style="text-align: center; color: var(--light-text); font-size: 0.8rem;">ไม่พบประวัติการเปลี่ยนแปลงข้อมูล</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing invoice Section (Matches Original Integration) -->
+                <div class="card" id="billingSectionCard" style="display: none;">
+                    <h3><i class="fas fa-file-invoice-dollar"></i> การเงินและค่าเสนอราคา (ส่ง LINE อัตโนมัติสำหรับสิทธิ์คนไข้)</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>รหัสสินค้า</th>
+                                    <th>รายการรักษา / ยา</th>
+                                    <th style="text-align:right;">ราคา (บาท)</th>
+                                    <th style="text-align:center;">จำนวน</th>
+                                    <th style="text-align:center;">ส่วนลด</th>
+                                    <th style="text-align:right;">รวม (บาท)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billingItemsBody">
+                                <!-- Loaded from billingItems -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="billing-calculator">
+                        <div class="billing-total-row">
+                            <span>ยอดรวมค่าบริการทั้งสิ้น:</span>
+                            <span id="billingTotalText">0 บาท</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: flex-end;">
+                        <button class="btn btn-secondary"><i class="fas fa-save"></i> บันทึกร่างค่าบริการ</button>
+                        <button class="btn btn-primary"><i class="fas fa-file-pdf"></i> ออกใบเสนอราคา/ค่าตรวจ</button>
+                        <button class="btn btn-success"><i class="fas fa-check-circle"></i> ออกใบเสร็จรับเงิน</button>
+                        <button class="btn btn-line" onclick="sendInvoiceToLine()"><i class="fab fa-line"></i> ส่งเข้า LINE ผู้ป่วย</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Register Patient -->
+            <div id="tab-register" class="tab-content">
+                <div class="card">
+                    <h3><i class="fas fa-user-plus"></i> บันทึกประวัติและลงทะเบียนเวชระเบียนผู้ป่วยนอกใหม่</h3>
+                    
+                    <form id="patientRegisterForm" onsubmit="handleRegisterSubmit(event)">
+                        <!-- SECTION: Personal Data -->
+                        <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 15px; border-left: 4px solid var(--primary-light); padding-left: 8px;">1. ข้อมูลส่วนบุคคลหลัก (Basic Patient Profile)</h4>
+                        
+                        <div class="form-grid" style="margin-bottom: 24px;">
+                            <div class="form-group col-3 required">
+                                <label for="regIdCard">เลขประจำตัวประชาชน (13 หลัก):</label>
+                                <div style="display: flex; gap: 6px;">
+                                    <input type="text" id="regIdCard" maxlength="13" placeholder="เลข 13 หลัก" required>
+                                    <button type="button" class="btn btn-secondary" style="padding: 10px;" onclick="syncCivilRegistry()"><i class="fas fa-sync"></i> ดึงทะเบียนราษฎร์</button>
+                                </div>
+                            </div>
+                            <div class="form-group col-2 required">
+                                <label for="regTitle">คำนำหน้า/ยศ:</label>
+                                <select id="regTitle" required onchange="validateGenderTitleMismatch()">
+                                    <option value="">-- เลือก --</option>
+                                    <option value="นาย">นาย</option>
+                                    <option value="นาง">นาง</option>
+                                    <option value="นางสาว">นางสาว</option>
+                                    <option value="เด็กชาย">เด็กชาย</option>
+                                    <option value="เด็กหญิง">เด็กหญิง</option>
+                                    <option value="พระภิกษุ">พระภิกษุ</option>
+                                    <option value="นายแพทย์">นายแพทย์</option>
+                                    <option value="พญ.">พญ.</option>
+                                    <option value="ร.ต.อ.">ร.ต.อ.</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-3 required">
+                                <label for="regName">ชื่อตัว (First Name):</label>
+                                <input type="text" id="regName" placeholder="ระบุชื่อจริง" required>
+                            </div>
+                            <div class="form-group col-4 required">
+                                <label for="regSurname">นามสกุล (Last Name):</label>
+                                <input type="text" id="regSurname" placeholder="ระบุนามสกุล" required>
+                            </div>
+
+                            <div class="form-group col-2 required">
+                                <label for="regGender">เพศสภาพ:</label>
+                                <select id="regGender" required onchange="validateGenderTitleMismatch()">
+                                    <option value="">-- เลือก --</option>
+                                    <option value="ชาย">ชาย</option>
+                                    <option value="หญิง">หญิง</option>
+                                    <option value="อื่น ๆ">อื่น ๆ</option>
+                                </select>
+                                <div class="warning-toast" id="genderTitleWarning"></div>
+                            </div>
+                            
+                            <div class="form-group col-2 required">
+                                <label for="regDob">วันเดือนปีเกิด:</label>
+                                <input type="text" id="regDob" placeholder="วว/ดด/ปปปป (พ.ศ.)" required onblur="calculateAgeFromDob(this.value)">
+                            </div>
+                            
+                            <div class="form-group col-2">
+                                <label for="regAgeInput">หรือระบุอายุ (ปี) หากไม่ทราบวันเกิด:</label>
+                                <input type="number" id="regAgeInput" min="0" max="150" placeholder="ระบุอายุ" oninput="calculateDobFromAge(this.value)">
+                                <div class="warning-toast" id="ageLimitWarning"></div>
+                            </div>
+
+                            <div class="form-group col-2">
+                                <label for="regBloodGroup">หมู่โลหิต (Blood):</label>
+                                <select id="regBloodGroup">
+                                    <option value="ไม่ทราบ">ไม่ทราบ</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="AB">AB</option>
+                                    <option value="O">O</option>
+                                    <option value="Rh+">Rh+</option>
+                                    <option value="Rh-">Rh-</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group col-2">
+                                <label for="regMarital">สถานภาพสมรส:</label>
+                                <select id="regMarital">
+                                    <option value="โสด">โสด</option>
+                                    <option value="สมรส">สมรส</option>
+                                    <option value="หย่าร้าง">หย่าร้าง</option>
+                                    <option value="หม้าย">หม้าย</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group col-2">
+                                <label for="regReligion">ศาสนา:</label>
+                                <input type="text" id="regReligion" value="พุทธ">
+                            </div>
+
+                            <div class="form-group col-3">
+                                <label for="regNationality">สัญชาติ / เชื้อชาติ:</label>
+                                <div style="display: flex; gap: 4px;">
+                                    <input type="text" id="regNationality" value="ไทย" placeholder="สัญชาติ">
+                                    <input type="text" id="regEthnicity" value="ไทย" placeholder="เชื้อชาติ">
+                                </div>
+                            </div>
+
+                            <div class="form-group col-3">
+                                <label for="regOccupation">อาชีพ:</label>
+                                <input type="text" id="regOccupation" placeholder="ระบุอาชีพ เช่น รับจ้าง ข้าราชการ">
+                            </div>
+
+                            <div class="form-group col-6">
+                                <label for="regPhysical">รูปร่างสัณฐานและสัญลักษณ์พิเศษ:</label>
+                                <input type="text" id="regPhysical" placeholder="เช่น แผลเป็นที่แก้มซ้าย สักลายที่แขนขวา">
+                            </div>
+                        </div>
+
+                        <!-- SECTION: Address & Phone -->
+                        <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 15px; border-left: 4px solid var(--primary-light); padding-left: 8px;">2. ข้อมูลติดต่อและที่อยู่ปัจจุบัน (Address & Telephones)</h4>
+                        
+                        <div class="form-grid" style="margin-bottom: 24px;">
+                            <div class="form-group col-8 required">
+                                <label for="regAddress">บ้านเลขที่ ถนน หมู่ ตรอก ซอย ตำบล อำเภอ จังหวัด:</label>
+                                <input type="text" id="regAddress" placeholder="123/4 หมู่ 5 ต.บ้านเชียง อ.หนองหาน จ.อุดรธานี" required>
+                            </div>
+                            <div class="form-group col-2 required">
+                                <label for="regZipcode">รหัสไปรษณีย์:</label>
+                                <input type="text" id="regZipcode" placeholder="41130" required>
+                            </div>
+                            <div class="form-group col-2">
+                                <label for="regCountry">ประเทศ:</label>
+                                <input type="text" id="regCountry" value="ประเทศไทย">
+                            </div>
+                            
+                            <div class="form-group col-4 required">
+                                <label for="regPhone">เบอร์โทรศัพท์มือถือ:</label>
+                                <input type="tel" id="regPhone" placeholder="08X-XXXXXXX" required>
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="regHomePhone">เบอร์โทรศัพท์บ้าน:</label>
+                                <input type="tel" id="regHomePhone" placeholder="02-XXXXXXX">
+                            </div>
+                            <div class="form-group col-4 required">
+                                <label for="regRights">สิทธิ์การรักษาสปสช. เริ่มต้น:</label>
+                                <select id="regRights" required onchange="toggleGovernmentFields(this.value)">
+                                    <option value="ชำระเงินเอง">ชำระเงินเอง</option>
+                                    <option value="ประกันสังคม">ประกันสังคม</option>
+                                    <option value="บัตรทอง (30 บาท)">บัตรทอง (30 บาท)</option>
+                                    <option value="กรมบัญชีกลาง">กรมบัญชีกลาง / ข้าราชการ</option>
+                                    <option value="ประกันสุขภาพเอกชน">ประกันสุขภาพเอกชน</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- SUBSECTION: Government officials info -->
+                        <div id="governmentFieldsContainer" style="display: none;" class="card">
+                            <h4 style="font-size: 0.85rem; margin-bottom: 12px; font-weight: 600; color: var(--primary);"><i class="fas fa-user-shield"></i> รายละเอียดข้อมูลสิทธิ์ข้าราชการ (Government Official Details)</h4>
+                            <div class="form-grid">
+                                <div class="form-group col-3">
+                                    <label for="regGovDept">สังกัดหลัก (กระทรวง/กรม):</label>
+                                    <input type="text" id="regGovDept" placeholder="เช่น กระทรวงสาธารณสุข">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label for="regGovSubDept">สังกัดรอง (กอง/ฝ่าย):</label>
+                                    <input type="text" id="regGovSubDept" placeholder="เช่น สำนักงานปลัด">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label for="regGovOfficerNo">เลขประจำตัวข้าราชการ:</label>
+                                    <input type="text" id="regGovOfficerNo" placeholder="เลขข้าราชการ">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label for="regGovComptrollerNo">เลขที่กรมบัญชีกลาง:</label>
+                                    <input type="text" id="regGovComptrollerNo" placeholder="เลขกรมบัญชีกลาง">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION: Family & Contacts -->
+                        <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 15px; border-left: 4px solid var(--primary-light); padding-left: 8px;">3. ข้อมูลครอบครัวและกรณีฉุกเฉินติดต่อได้ (Family & Emergency Contacts)</h4>
+                        
+                        <div class="form-grid" style="margin-bottom: 24px;">
+                            <div class="form-group col-4">
+                                <label for="regFatherName">ชื่อ - นามสกุลบิดา:</label>
+                                <input type="text" id="regFatherName" placeholder="ชื่อ-สกุลบิดา">
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="regMotherName">ชื่อ - นามสกุลมารดา:</label>
+                                <input type="text" id="regMotherName" placeholder="ชื่อ-สกุลมารดา">
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="regSpouseName">ชื่อ - นามสกุลคู่สมรส:</label>
+                                <input type="text" id="regSpouseName" placeholder="ชื่อ-สกุลคู่สมรส (ถ้ามี)">
+                            </div>
+
+                            <div class="form-group col-4 required">
+                                <label for="regEmergencyContact">ชื่อผู้ติดต่อฉุกเฉิน:</label>
+                                <input type="text" id="regEmergencyContact" placeholder="ชื่อสกุลผู้รับการติดต่อกรณีฉุกเฉิน" required>
+                            </div>
+                            <div class="form-group col-4 required">
+                                <label for="regRelationship">ความสัมพันธ์กับผู้ป่วย:</label>
+                                <input type="text" id="regRelationship" placeholder="เช่น บิดา มารดา บุตร คู่สมรส กู้ชีพ" required>
+                            </div>
+                            <div class="form-group col-4 required">
+                                <label for="regEmergencyPhone">เบอร์โทรศัพท์ติดต่อฉุกเฉิน:</label>
+                                <input type="tel" id="regEmergencyPhone" placeholder="เบอร์โทรศัพท์ติดต่อได้" required>
+                            </div>
+                        </div>
+
+                        <!-- SECTION: Medical Conditions & Special Statuses -->
+                        <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 15px; border-left: 4px solid var(--primary-light); padding-left: 8px;">4. ข้อมูลการแพทย์ การรักษาความปลอดภัย และการเสียชีวิต (Medical, Safety & Statuses)</h4>
+                        
+                        <div class="form-grid" style="margin-bottom: 24px;">
+                            <div class="form-group col-6">
+                                <label for="regConditions">โรคประจำตัวเด่นชัด:</label>
+                                <input type="text" id="regConditions" placeholder="ระบุโรคประจำตัว ถ้าไม่มีให้เว้นว่างหรือใส่ 'ไม่มี'">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="regAllergy">ประวัติการแพ้ยาสารเคมี:</label>
+                                <input type="text" id="regAllergy" style="color: var(--danger); font-weight: bold;" placeholder="เช่น Penicillin หรือ อาหารทะเล (ไม่มีใส่ 'ไม่มี')">
+                            </div>
+
+                            <!-- Confidentiality configuration (MOPH 1.21) -->
+                            <div class="form-group col-6" style="flex-direction: row; align-items: center; gap: 15px; margin-top: 15px;">
+                                <label class="switch-group">
+                                    <input type="checkbox" id="regIsConfidential" style="display:none;" onchange="toggleConfidentialSelect(this.checked)">
+                                    <div class="switch-box"></div>
+                                    <span style="font-size: 0.9rem; font-weight: 600;"><i class="fas fa-user-secret" style="color: var(--primary-light);"></i> ปกปิดความลับแฟ้มเวชระเบียนผู้ป่วย (Confidential Card)</span>
+                                </label>
+                                <select id="regConfidentialRole" style="display: none; width: auto; flex: 1;">
+                                    <option value="staff">เฉพาะเจ้าหน้าที่เวชระเบียนและแพทย์เจ้าของไข้</option>
+                                    <option value="doctors">เฉพาะองค์กรแพทย์บริหารงาน</option>
+                                    <option value="admin">เฉพาะผู้ดูแลระบบเวชสารสนเทศชั้นสูง (Administrator)</option>
+                                </select>
+                            </div>
+
+                            <!-- Deceased configuration (MOPH 1.23) -->
+                            <div class="form-group col-6" style="flex-direction: row; align-items: center; gap: 15px; margin-top: 15px;">
+                                <label class="switch-group">
+                                    <input type="checkbox" id="regIsDeceased" style="display:none;" onchange="toggleDeceasedFields(this.checked)">
+                                    <div class="switch-box"></div>
+                                    <span style="font-size: 0.9rem; font-weight: 600;"><i class="fas fa-procedures" style="color: var(--danger);"></i> ผู้ป่วยรายนี้เสียชีวิตแล้ว (Deceased Record)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Deceased Details Cards -->
+                        <div id="deceasedFieldsContainer" style="display: none;" class="card">
+                            <h4 style="font-size: 0.85rem; margin-bottom: 12px; font-weight: 600; color: var(--danger);"><i class="fas fa-heart-broken"></i> รายละเอียดการลงทะเบียนมรณกรรม (Death Registration Details)</h4>
+                            <div class="form-grid">
+                                <div class="form-group col-3">
+                                    <label for="regDeathDate">วันและเวลาที่เสียชีวิต:</label>
+                                    <input type="text" id="regDeathDate" placeholder="วว/ดด/ปปปป ชม:นาที">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label for="regDeathCause">สาเหตุการเสียชีวิต (ICD-10 หรือคำอธิบาย):</label>
+                                    <input type="text" id="regDeathCause" placeholder="สาเหตุการเสียชีวิต">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label for="regDeathPlace">สถานที่เสียชีวิต (รพ. / บ้าน / ทางหลวง):</label>
+                                    <input type="text" id="regDeathPlace" placeholder="สถานที่เกิดเหตุ">
+                                </div>
+                                <div class="form-group col-3">
+                                    <label for="regDeathDoctor">แพทย์ผู้ตรวจและลงความเห็น/ชันสูตร:</label>
+                                    <input type="text" id="regDeathDoctor" placeholder="ระบุนามแพทย์ผู้รับรอง">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 32px; display: flex; gap: 16px;">
+                            <button type="submit" class="btn btn-primary" style="flex: 1; height: 50px; font-size: 1rem;"><i class="fas fa-save"></i> บันทึกเวชระเบียนประวัติผู้ป่วยนอก</button>
+                            <button type="reset" class="btn btn-secondary" style="width: 150px;">ล้างข้อมูลใหม่</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB: Merge HN -->
+            <div id="tab-merge" class="tab-content">
+                <div class="card">
+                    <h3><i class="fas fa-compress-arrows-alt"></i> ยุบรวมประวัติผู้ป่วย (Merge HN - สำหรับกรณีแฟ้มประวัติคนไข้ซ้ำซ้อน)</h3>
+                    <div class="alert-warning-banner">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span><strong>คำเตือน:</strong> การยุบรวมแฟ้มเวชระเบียนจะทำการโอนย้ายข้อมูลการตรวจรักษา (Visits) ทั้งหมดจาก HN ที่ต้องการยุบรวม ไปยัง HN หลัก และ HN เดิมจะถูกปิดใช้งาน (Inactive) ทันที การกระทำนี้ไม่สามารถยกเลิกได้เอง!</span>
+                    </div>
+
+                    <div class="form-grid" style="margin-bottom: 24px;">
+                        <div class="form-group col-5">
+                            <label for="mergeMasterHn">1. ป้อน HN หลักที่ต้องการเก็บไว้ (Master HN):</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="mergeMasterHn" placeholder="เช่น HN-690023">
+                                <button class="btn btn-secondary" onclick="lookupMergePatient('master')">ดึง</button>
+                            </div>
+                            <div id="mergeMasterProfile" style="margin-top: 10px; font-size: 0.85rem; color: var(--primary); font-weight: bold;"></div>
+                        </div>
+
+                        <div class="form-group col-2" style="display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--light-text); padding-top: 20px;">
+                            <i class="fas fa-long-arrow-alt-left"></i>
+                        </div>
+
+                        <div class="form-group col-5">
+                            <label for="mergeSecondaryHn">2. ป้อน HN ที่ต้องการยุบรวม/ปิดใช้งาน (Secondary HN):</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="mergeSecondaryHn" placeholder="เช่น HN-690024">
+                                <button class="btn btn-secondary" onclick="lookupMergePatient('secondary')">ดึง</button>
+                            </div>
+                            <div id="mergeSecondaryProfile" style="margin-top: 10px; font-size: 0.85rem; color: var(--danger); font-weight: bold;"></div>
+                        </div>
+
+                        <div class="form-group col-6 required">
+                            <label for="mergeDocRef">เอกสารอ้างอิงราชการ / ใบสั่งงานห้องบัตร:</label>
+                            <input type="text" id="mergeDocRef" placeholder="เช่น ใบรับคำร้องขอรวม HN จากผู้ป่วยลงวันที่ 06/06/2569" value="ตรวจสอบพบชื่อและเลขประจำตัวประชาชนซ้ำซ้อน">
+                        </div>
+
+                        <div class="form-group col-6 required">
+                            <label for="mergeOfficer">เจ้าหน้าที่ผู้มีอำนาจสั่งการ:</label>
+                            <input type="text" id="mergeOfficer" value="พญ. วารุณี รักษ์ไทย" placeholder="ระบุรหัสหรือนามเจ้าหน้าที่">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-danger" style="width: 100%; height: 50px; font-size: 1rem;" onclick="triggerMergeHNs()"><i class="fas fa-compress-arrows-alt"></i> ยืนยันการยุบรวมแฟ้มเวชระเบียนถาวร</button>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-list-alt"></i> ประวัติการยุบรวมแฟ้มประวัติผู้ป่วย (Merge Logs History)</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>วันที่ดำเนินการ</th>
+                                    <th>HN หลัก (ที่เก็บไว้)</th>
+                                    <th>HN ยุบรวม (ที่ปิดไป)</th>
+                                    <th>จำนวนบันทึกที่ย้าย</th>
+                                    <th>เจ้าหน้าที่ดำเนินการ</th>
+                                    <th>เอกสารอ้างอิง</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mergeLogsTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--light-text);">ไม่พบประวัติการยุบรวมเวชระเบียน</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Mass Casualty -->
+            <div id="tab-mass-casualty" class="tab-content">
+                <div class="card">
+                    <h3><i class="fas fa-ambulance"></i> ลงทะเบียนและส่งตรวจอุบัติเหตุหมู่ฉุกเฉิน (Mass Casualty ER Registration Tool)</h3>
+                    <p style="color: var(--light-text); font-size: 0.85rem; margin-bottom: 20px;">
+                        ระบบสำหรับลงทะเบียนและคัดกรองผู้ป่วยฉุกเฉินจำลองกรณีมีภัยพิบัติหรืออุบัติเหตุหมู่เข้าโรงพยาบาลพร้อมกันเป็นจำนวนมาก ระบบจะดึงและเจเนอเรต HN ฉุกเฉินชั่วคราวอย่างรวดเร็ว พร้อมเปิด visit ห้องฉุกเฉิน (ER) ทันที
+                    </p>
+
+                    <div class="form-grid" style="margin-bottom: 24px;">
+                        <div class="form-group col-6 required">
+                            <label for="mcEventName">ชื่อรหัสภัยพิบัติ / จุดเกิดเหตุอุบัติเหตุหมู่:</label>
+                            <input type="text" id="mcEventName" placeholder="เช่น รถบัสคว่ำ โค้งร้อยศพ ถ.มิตรภาพ" value="อุบัติเหตุรถบัสคว่ำ ถ.มิตรภาพ">
+                        </div>
+                        <div class="form-group col-3 required">
+                            <label for="mcCount">จำนวนผู้ประสบภัยที่รับเข้าห้องฉุกเฉิน:</label>
+                            <select id="mcCount">
+                                <option value="2">2 ราย</option>
+                                <option value="5" selected>5 ราย</option>
+                                <option value="10">10 ราย</option>
+                                <option value="20">20 ราย</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-3 required">
+                            <label for="mcOfficer">เจ้าหน้าที่สั่งการกู้ชีพ:</label>
+                            <input type="text" id="mcOfficer" value="พญ. วารุณี (ศูนย์กู้ชีพ ER)">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-danger" style="width: 100%; height: 50px; font-size: 1rem; background-color: #dc2626;" onclick="triggerMassCasualty()"><i class="fas fa-ambulance"></i> รันกระบวนการลงทะเบียนอุบัติเหตุหมู่แบบด่วน</button>
+                </div>
+
+                <div class="card" id="massCasualtyResultCard" style="display: none;">
+                    <h3><i class="fas fa-check-double"></i> แฟ้มประวัติผู้ประสบภัยที่เปิดขึ้นโดยระบบด่วน (ส่ง ER ทันที)</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HN ฉุกเฉิน</th>
+                                    <th>ชื่อ - นามสกุลชั่วคราว</th>
+                                    <th>เพศ</th>
+                                    <th>เลขประจำตัวประชาชนชั่วคราว</th>
+                                    <th>โรคประจำตัว/ triage</th>
+                                    <th>สิทธิ์การรักษา</th>
+                                </tr>
+                            </thead>
+                            <tbody id="massCasualtyTableBody">
+                                <!-- entries generated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: Print replacement OP Card -->
+            <div id="tab-print-card" class="tab-content">
+                <div class="card">
+                    <h3><i class="fas fa-print"></i> พิมพ์ใบแทนแฟ้มประวัติเวชระเบียน (Replacement Folder Sheet)</h3>
+                    <p style="color: var(--light-text); font-size: 0.85rem; margin-bottom: 20px;">
+                        กรณีที่ใบเวชระเบียนผู้ป่วยนอกเดิมชำรุด สูญหาย หรือไม่สามารถนำส่งไปหอผู้ป่วยได้ทันเวลา ให้ทำการกรอกใบแทนและบันทึกสาเหตุการสั่งพิมพ์ไว้ในประวัติ
+                    </p>
+
+                    <div class="form-grid" style="margin-bottom: 24px;">
+                        <div class="form-group col-6 required">
+                            <label for="printHn">รหัส HN ผู้ป่วย:</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="printHn" placeholder="เช่น HN-690023">
+                                <button class="btn btn-secondary" onclick="lookupPrintPatient()">ตรวจสอบ</button>
+                            </div>
+                            <div id="printPatientProfile" style="margin-top: 10px; font-size: 0.85rem; color: var(--primary); font-weight: bold;"></div>
+                        </div>
+
+                        <div class="form-group col-6 required">
+                            <label for="printReason">สาเหตุของการสั่งพิมพ์ใบแทนเวชระเบียน:</label>
+                            <select id="printReason">
+                                <option value="เวชระเบียนตัวจริงชำรุดเสียหาย">เวชระเบียนตัวจริงชำรุดเสียหาย</option>
+                                <option value="ค้นหาเวชระเบียนเดิมไม่พบในชั้นบัตร">ค้นหาเวชระเบียนเดิมไม่พบในชั้นบัตร</option>
+                                <option value="ผู้ป่วยประสงค์ขอย้ายสิทธิ์/ส่งประวัติย่อนอกโรงพยาบาล">ผู้ป่วยประสงค์ขอย้ายสิทธิ์/ส่งประวัติย่อนอกโรงพยาบาล</option>
+                                <option value="ส่งตัวคนไข้ไปตรวจด่วนพิเศษ (ยังไม่ผ่านห้องบัตร)">ส่งตัวคนไข้ไปตรวจด่วนพิเศษ (ยังไม่ผ่านห้องบัตร)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%; height: 50px; font-size: 1rem;" onclick="triggerPrintReplacement()"><i class="fas fa-print"></i> บันทึกเหตุผลและสั่งพิมพ์ใบแทนเวชระเบียน</button>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-list-alt"></i> บันทึกประวัติการสั่งพิมพ์ใบแทนเวชระเบียน (Replacement Print History Logs)</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>วันที่สั่งพิมพ์</th>
+                                    <th>HN</th>
+                                    <th>ชื่อ - นามสกุลคนไข้</th>
+                                    <th>สาเหตุ / วัตถุประสงค์</th>
+                                    <th>เจ้าหน้าที่สั่งการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="printLogsTableBody">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--light-text);">ไม่พบประวัติการสั่งพิมพ์ใบแทนเวชระเบียน</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL: Send Patient to Visit Form -->
+    <div id="visitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-stethoscope" style="color: var(--primary-light);"></i> แบบบันทึกส่งตรวจผู้ป่วยและสรุปการวินิจฉัย</h3>
+                <button class="modal-close" onclick="closeVisitModal()">&times;</button>
+            </div>
+            
+            <form id="visitRegisterForm" onsubmit="handleVisitSubmit(event)">
+                <div class="form-grid" style="margin-bottom: 15px;">
+                    <div class="form-group col-12">
+                        <label>ข้อมูลผู้ป่วย:</label>
+                        <div style="font-weight: bold; background-color: var(--gray-100); padding: 10px; border-radius: var(--radius-sm);" id="visitModalPatientText"></div>
+                    </div>
+
+                    <div class="form-group col-6 required">
+                        <label for="visitDoctor">ส่งเข้าตรวจกับแพทย์/ห้องตรวจ:</label>
+                        <select id="visitDoctor" required>
+                            <option value="นพ. สมชาย (โรคทั่วไป)">นพ. สมชาย (โรคทั่วไป)</option>
+                            <option value="พญ. ศิริพร (ผิวหนัง & เลเซอร์)">พญ. ศิริพร (ผิวหนัง & เลเซอร์)</option>
+                            <option value="พญ. ชลดา (คลินิกเด็ก)">พญ. ชลดา (คลินิกเด็ก)</option>
+                            <option value="นพ. วิจารณ์ (คลินิกหัวใจ)">นพ. วิจารณ์ (คลินิกหัวใจ)</option>
+                            <option value="ห้องอุบัติเหตุ-ฉุกเฉิน (ER)">ห้องอุบัติเหตุ-ฉุกเฉิน (ER)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-6">
+                        <label for="visitStatus">สถานะห้องตรวจ:</label>
+                        <select id="visitStatus">
+                            <option value="รอตรวจ">รอตรวจ (Queue)</option>
+                            <option value="ห้องตรวจ">กำลังตรวจ (In examination)</option>
+                            <option value="ชำระเงิน">เสร็จสิ้นห้องตรวจ/รอจ่ายเงิน</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-12 required">
+                        <label for="visitTriage">อาการเบื้องต้น / ประเมิน Triage:</label>
+                        <input type="text" id="visitTriage" value="มาตรวจตามนัดปกติ วัดสัญญาณชีพเสถียร" required>
+                    </div>
+                </div>
+
+                <!-- Multiple Rights Selection (MOPH 2.3) -->
+                <div class="form-group" style="margin-bottom: 18px;">
+                    <label>เลือกสิทธิ์การรักษาในการส่งตรวจครั้งนี้ (เลือกได้มากกว่า 1 สิทธิ์):</label>
+                    <div class="rights-selector-grid">
+                        <label class="right-checkbox-card" id="rightCardSelf">
+                            <input type="checkbox" value="ชำระเงินเอง" onchange="toggleRightCard(this)">
+                            <span>ชำระเงินเอง</span>
+                        </label>
+                        <label class="right-checkbox-card" id="rightCardSocial">
+                            <input type="checkbox" value="ประกันสังคม" onchange="toggleRightCard(this)">
+                            <span>ประกันสังคม</span>
+                        </label>
+                        <label class="right-checkbox-card" id="rightCardGold">
+                            <input type="checkbox" value="บัตรทอง (30 บาท)" onchange="toggleRightCard(this)">
+                            <span>บัตรทอง (30 บาท)</span>
+                        </label>
+                        <label class="right-checkbox-card" id="rightCardGov">
+                            <input type="checkbox" value="กรมบัญชีกลาง" onchange="toggleRightCard(this)">
+                            <span>กรมบัญชีกลาง</span>
+                        </label>
+                        <label class="right-checkbox-card" id="rightCardPrivate">
+                            <input type="checkbox" value="ประกันสุขภาพเอกชน" onchange="toggleRightCard(this)">
+                            <span>ประกันเอกชน</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Diagnostics ICD-10 and ICD-9 (MOPH 1.24) -->
+                <div class="form-grid" style="margin-bottom: 24px;">
+                    <div class="form-group col-6" style="position: relative;">
+                        <label for="icd10Input">บันทึกโรคการวินิจฉัย (ICD-10):</label>
+                        <input type="text" id="icd10Input" placeholder="พิมพ์ชื่อโรคหรือรหัส ICD-10..." oninput="lookupICD10(this.value)">
+                        <div class="autocomplete-dropdown" id="icd10Dropdown"></div>
+                        <div class="selected-list" id="selectedIcd10List"></div>
+                    </div>
+
+                    <div class="form-group col-6" style="position: relative;">
+                        <label for="icd9Input">บันทึกหัตถการทางการรักษา (ICD-9):</label>
+                        <input type="text" id="icd9Input" placeholder="พิมพ์ชื่อหัตถการหรือรหัส ICD-9..." oninput="lookupICD9(this.value)">
+                        <div class="autocomplete-dropdown" id="icd9Dropdown"></div>
+                        <div class="selected-list" id="selectedIcd9List"></div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeVisitModal()">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">ยืนยันส่งตรวจ & บันทึกโรค</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Edit Patient details / Name changes log -->
+    <div id="editPatientModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit" style="color: var(--warning);"></i> แก้ไขรายละเอียดเวชระเบียนและประวัติการเปลี่ยนชื่อ-นามสกุล</h3>
+                <button class="modal-close" onclick="closeEditPatientModal()">&times;</button>
+            </div>
+            
+            <form id="editPatientForm" onsubmit="handleEditPatientSubmit(event)">
+                <input type="hidden" id="editHn">
                 
-                document.getElementById('patientSection').style.display = 'block';
-                showBilling();
-            } else {
-                alert('ไม่พบข้อมูลผู้ป่วย (ลองใช้ HN-690023)');
-            }
-        } catch (err) {
-            console.error(err);
-            alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
-        } finally {
-            btn.innerHTML = '<i class="fas fa-sync-alt"></i> ดึงข้อมูล';
-            btn.disabled = false;
-        }
-    }
+                <h4 style="color: var(--warning); font-size: 0.9rem; margin-bottom: 15px; border-left: 4px solid var(--warning); padding-left: 8px;">1. รายละเอียดข้อมูลส่วนตัวที่ต้องการแก้ไข</h4>
+                <div class="form-grid" style="margin-bottom: 20px;">
+                    <div class="form-group col-2 required">
+                        <label for="editTitle">คำนำหน้า/ยศ:</label>
+                        <select id="editTitle" required>
+                            <option value="นาย">นาย</option>
+                            <option value="นาง">นาง</option>
+                            <option value="นางสาว">นางสาว</option>
+                            <option value="เด็กชาย">เด็กชาย</option>
+                            <option value="เด็กหญิง">เด็กหญิง</option>
+                            <option value="พระภิกษุ">พระภิกษุ</option>
+                            <option value="นายแพทย์">นายแพทย์</option>
+                            <option value="พญ.">พญ.</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-5 required">
+                        <label for="editName">ชื่อตัว:</label>
+                        <input type="text" id="editName" required>
+                    </div>
+                    <div class="form-group col-5 required">
+                        <label for="editSurname">นามสกุล:</label>
+                        <input type="text" id="editSurname" required>
+                    </div>
+                    
+                    <div class="form-group col-6 required">
+                        <label for="editAddress">ที่อยู่ปัจจุบัน:</label>
+                        <input type="text" id="editAddress" required>
+                    </div>
+                    <div class="form-group col-3 required">
+                        <label for="editPhone">เบอร์โทรศัพท์มือถือ:</label>
+                        <input type="tel" id="editPhone" required>
+                    </div>
+                    <div class="form-group col-3 required">
+                        <label for="editRights">สิทธิ์การรักษา:</label>
+                        <select id="editRights" required>
+                            <option value="ชำระเงินเอง">ชำระเงินเอง</option>
+                            <option value="ประกันสังคม">ประกันสังคม</option>
+                            <option value="บัตรทอง (30 บาท)">บัตรทอง (30 บาท)</option>
+                            <option value="กรมบัญชีกลาง">กรมบัญชีกลาง</option>
+                            <option value="ประกันสุขภาพเอกชน">ประกันสุขภาพเอกชน</option>
+                        </select>
+                    </div>
+                </div>
 
-    function calculateRowTotal(item) {
-        const subtotal = item.price * item.qty;
-        const discountVal = parseInt(item.discount) || 0;
-        return subtotal * (1 - discountVal / 100);
-    }
+                <!-- Name change logs requirements (MOPH 1.14 & 1.15) -->
+                <h4 style="color: var(--primary); font-size: 0.9rem; margin-bottom: 15px; border-left: 4px solid var(--primary-light); padding-left: 8px;">2. ข้อมูลการบันทึกการแก้ไขโดยเจ้าหน้าที่</h4>
+                <div class="form-grid" style="margin-bottom: 24px;">
+                    <div class="form-group col-6 required">
+                        <label for="editDocRef">เลขที่เอกสารราชการอ้างอิง (กรณีเปลี่ยนชื่อ-นามสกุล):</label>
+                        <input type="text" id="editDocRef" placeholder="เช่น ใบสำคัญการเปลี่ยนชื่อตัว ช.3 เลขที่ 102/2569" value="คนไข้แจ้งปรับปรุงข้อมูลที่อยู่/ชื่อ">
+                    </div>
+                    <div class="form-group col-6 required">
+                        <label for="editOfficer">เจ้าหน้าที่ผู้ทำการตรวจสอบแก้ไข:</label>
+                        <input type="text" id="editOfficer" value="พญ. วารุณี รักษ์ไทย" readonly>
+                    </div>
+                </div>
 
-    function showBilling() {
-        const tbody = document.getElementById('billingItems');
-        tbody.innerHTML = '';
-        let total = 0;
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditPatientModal()">ยกเลิก</button>
+                    <button type="submit" class="btn btn-warning">บันทึกความเปลี่ยนแปลงประวัติการรักษา</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        billingItems.forEach((item, index) => {
-            const rowTotal = calculateRowTotal(item);
-            total += rowTotal;
+    <!-- Script Implementation -->
+    <script>
+        // Store current active tab, patients index, and state
+        let currentTab = 'dashboard';
+        let patientsList = {};
+        let activePatient = null;
+        let selectedIcd10 = [];
+        let selectedIcd9 = [];
+        
+        // Billing items configuration
+        let billingItems = [
+            { id: 'TR-004', name: 'ตรวจสุขภาพประจำปี (Package A)', price: 2500, qty: 1, discount: '10%' },
+            { id: 'MED-102', name: 'ยาลดความดันโลหิต (Amlodipine 5mg)', price: 300, qty: 2, discount: '0%' }
+        ];
 
-            const row = `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td><code>${item.id}</code></td>
-                    <td>${item.name}</td>
-                    <td style="text-align:right;">${item.price.toLocaleString()}</td>
-                    <td style="text-align:center;">${item.qty}</td>
-                    <td style="text-align:center;">${item.discount}</td>
-                    <td style="text-align:right; font-weight: bold;">${rowTotal.toLocaleString()}</td>
-                </tr>
-            `;
-            tbody.innerHTML += row;
+        // On Page Load
+        window.addEventListener('load', () => {
+            fetchStats();
+            fetchTodayVisits();
         });
 
-        document.getElementById('totalAmount').innerText = total.toLocaleString();
-        document.getElementById('billingSection').style.display = 'block';
-    }
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            // Highlight selected nav item
+            const navItems = document.querySelectorAll('.nav-item');
+            if (tabId === 'dashboard') { navItems[0].classList.add('active'); document.getElementById('pageTitle').innerText = 'แผงควบคุมหลัก (Dashboard)'; fetchStats(); fetchTodayVisits(); }
+            else if (tabId === 'search-visit') { navItems[1].classList.add('active'); document.getElementById('pageTitle').innerText = 'ค้นหาผู้ป่วยเก่า & สิทธิ์ / ส่งห้องตรวจรักษา'; }
+            else if (tabId === 'register') { navItems[2].classList.add('active'); document.getElementById('pageTitle').innerText = 'ระบบบันทึกประวัติผู้ป่วยนอกรายใหม่'; }
+            else if (tabId === 'merge') { navItems[3].classList.add('active'); document.getElementById('pageTitle').innerText = 'ระบบการยุบรวมประวัติแฟ้มซ้ำซ้อน (Merge HN)'; loadMergeLogs(); }
+            else if (tabId === 'mass-casualty') { navItems[4].classList.add('active'); document.getElementById('pageTitle').innerText = 'การลงทะเบียนอุบัติเหตุหมู่และภัยพิบัติ (ER)'; }
+            else if (tabId === 'print-card') { navItems[5].classList.add('active'); document.getElementById('pageTitle').innerText = 'บันทึกการพิมพ์ใบแทนเวชระเบียนคนไข้'; loadPrintLogs(); }
+            
+            currentTab = tabId;
+        }
 
-    async function sendToLine() {
-        if(!currentPatient) return;
-        const total = billingItems.reduce((sum, item) => sum + calculateRowTotal(item), 0);
-        
-        try {
-            const res = await fetch('/api/quotation', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    hn: currentPatient.hn,
-                    items: billingItems,
-                    totalAmount: total
-                })
+        // --- DASHBOARD FUNCTIONS ---
+        async function fetchStats() {
+            try {
+                const searchRes = await fetch('/api/patients/search');
+                const searchData = await searchRes.json();
+                
+                const mergeRes = await fetch('/api/merge-logs');
+                const mergeData = await mergeRes.json();
+                
+                const printRes = await fetch('/api/print-logs');
+                const printData = await printRes.json();
+
+                const patients = searchData.data || [];
+                const mergeLogsCount = (mergeData.data || []).length;
+                const printLogsCount = (printData.data || []).length;
+                
+                document.getElementById('statTotalPatients').innerText = patients.length;
+                document.getElementById('statMergeCount').innerText = mergeLogsCount;
+                document.getElementById('statPrintCount').innerText = printLogsCount;
+            } catch (err) {
+                console.error('Error fetching stats:', err);
+            }
+        }
+
+        async function fetchTodayVisits() {
+            try {
+                const res = await fetch('/api/patients/search'); // fetch all
+                const patientsData = await res.json();
+                const patients = patientsData.data || [];
+
+                let allVisits = [];
+                for(let p of patients) {
+                    const vRes = await fetch(`/api/patients/${p.hn}/visits`);
+                    const vData = await vRes.json();
+                    allVisits.push(...(vData.data || []));
+                }
+
+                // Sort visits by time/id
+                allVisits.reverse();
+                document.getElementById('statTodayVisits').innerText = allVisits.length;
+
+                const tbody = document.getElementById('todayVisitsTableBody');
+                tbody.innerHTML = '';
+
+                if (allVisits.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--light-text);">ไม่มีรายการส่งตรวจในวันนี้</td></tr>`;
+                    return;
+                }
+
+                allVisits.slice(0, 10).forEach(v => {
+                    const badgeClass = v.status === 'เสร็จสิ้น' ? 'badge-success' : (v.status === 'ห้องตรวจ' ? 'badge-info' : 'badge-warning');
+                    const rightsText = Array.isArray(v.rights) ? v.rights.join(', ') : v.rights;
+                    
+                    const row = `
+                        <tr>
+                            <td>${v.time || '10:00'}</td>
+                            <td><code>${v.hn}</code></td>
+                            <td><strong>${v.patientName}</strong></td>
+                            <td>${rightsText}</td>
+                            <td>${v.doctor}</td>
+                            <td><span class="badge ${badgeClass}">${v.status}</span></td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // --- SEARCH & VISITING FUNCTIONS ---
+        async function handleSearchInput(query) {
+            const dropdown = document.getElementById('searchSuggestions');
+            if (query.trim().length < 2) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/patients/search?q=${encodeURIComponent(query)}`);
+                const result = await res.json();
+                
+                if (result.success && result.data.length > 0) {
+                    dropdown.innerHTML = '';
+                    result.data.slice(0, 5).forEach(p => {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion-item';
+                        div.onclick = () => {
+                            document.getElementById('patientSearchInput').value = p.hn;
+                            dropdown.style.display = 'none';
+                            loadPatientProfile(p.hn);
+                        };
+                        div.innerHTML = `
+                            <span class="p-name">${p.fullName}</span>
+                            <span class="p-hn">${p.hn}</span>
+                        `;
+                        dropdown.appendChild(div);
+                    });
+                    dropdown.style.display = 'block';
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function triggerSearch() {
+            const query = document.getElementById('patientSearchInput').value.trim();
+            if (query) {
+                loadPatientProfile(query);
+            }
+        }
+
+        async function loadPatientProfile(hn) {
+            try {
+                const res = await fetch(`/api/patient/${hn}`);
+                const result = await res.json();
+
+                if (result.success) {
+                    const p = result.data;
+                    activePatient = p;
+
+                    document.getElementById('hudHN').innerText = p.hn;
+                    document.getElementById('hudIdCard').innerText = p.idCard;
+                    document.getElementById('hudName').innerText = `${p.title || ''}${p.name} ${p.surname}`;
+                    document.getElementById('hudDob').innerText = p.dob;
+                    
+                    // Age calculation
+                    let ageText = "ไม่พบข้อมูล";
+                    if (p.dob && p.dob.includes('/')) {
+                        const parts = p.dob.split('/');
+                        const yearB.E = parseInt(parts[2]);
+                        const currentYearB.E = new Date().getFullYear() + 543;
+                        ageText = `${currentYearB.E - yearB.E} ปี`;
+                    }
+                    document.getElementById('hudAge').innerText = ageText;
+                    document.getElementById('hudGender').innerText = p.gender;
+                    document.getElementById('hudBloodGroup').innerText = p.bloodGroup || 'ไม่ระบุ';
+                    document.getElementById('hudMarital').innerText = p.maritalStatus || 'ไม่ระบุ';
+                    document.getElementById('hudNationality').innerText = `${p.nationality || 'ไทย'} / ${p.ethnicity || 'ไทย'} / ${p.religion || 'พุทธ'}`;
+                    document.getElementById('hudOccupation').innerText = p.occupation || '-';
+                    document.getElementById('hudPhone').innerText = p.phone;
+                    document.getElementById('hudConditions').innerText = p.conditions || 'ไม่มี';
+                    document.getElementById('hudAllergy').innerText = p.allergy || 'ไม่มีประวัติแพ้ยา';
+                    document.getElementById('hudAddress').innerText = p.address;
+                    document.getElementById('hudPhoto').src = p.photo || `https://api.dicebear.com/7.x/adventurer/svg?seed=${p.name}`;
+
+                    // Secret badge MOPH 1.21
+                    const confBadge = document.getElementById('hudConfidentialBadge');
+                    if (p.isConfidential) {
+                        confBadge.innerHTML = `<span class="badge badge-danger" style="margin-top: 8px;"><i class="fas fa-lock"></i> ปกปิดข้อมูลความลับ (${p.confidentialRole})</span>`;
+                    } else {
+                        confBadge.innerHTML = '';
+                    }
+
+                    // Deceased badge MOPH 1.23
+                    const decBadge = document.getElementById('hudDeceasedBadge');
+                    if (p.isDeceased) {
+                        decBadge.innerHTML = `
+                            <span class="badge badge-danger" style="margin-top: 6px;"><i class="fas fa-heart-broken"></i> เสียชีวิตแล้วเมื่อ ${p.deathDate}</span>
+                        `;
+                    } else {
+                        decBadge.innerHTML = '';
+                    }
+
+                    // Hide suggestions dropdown
+                    document.getElementById('searchSuggestions').style.display = 'none';
+                    document.getElementById('nhsoRightsResult').style.display = 'none';
+
+                    // Load histories
+                    loadPatientVisitsHistory(p.hn);
+                    loadPatientChangeLogs(p.hn);
+
+                    // Show sections
+                    document.getElementById('patientProfileCard').style.display = 'block';
+                    loadBillingTable();
+                } else {
+                    alert('ไม่พบแฟ้มประวัติคนไข้รายนี้ในฐานข้อมูล');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('เกิดข้อผิดพลาดในการโหลดประวัติ');
+            }
+        }
+
+        async function loadPatientVisitsHistory(hn) {
+            try {
+                const res = await fetch(`/api/patients/${hn}/visits`);
+                const result = await res.json();
+                const tbody = document.getElementById('hudVisitHistoryBody');
+                tbody.innerHTML = '';
+
+                if (result.success && result.data.length > 0) {
+                    result.data.reverse().forEach(v => {
+                        const diagnoses = (v.diagnoses || []).map(d => `${d.code}:${d.name}`).join(', ') || 'ไม่ได้ลงรหัสโรค';
+                        const row = `
+                            <tr>
+                                <td>${v.date} ${v.time || ''}</td>
+                                <td><strong>${v.doctor}</strong></td>
+                                <td style="font-size: 0.8rem;"><code>${diagnoses}</code></td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--light-text); font-size: 0.8rem;">ไม่พบประวัติการส่งตรวจ</td></tr>`;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadPatientChangeLogs(hn) {
+            try {
+                const res = await fetch(`/api/patients/${hn}/logs`);
+                const result = await res.json();
+                const tbody = document.getElementById('hudChangeLogBody');
+                tbody.innerHTML = '';
+
+                if (result.success && result.data.length > 0) {
+                    result.data.reverse().forEach(log => {
+                        const d = new Date(log.timestamp);
+                        const displayDate = `${d.toLocaleDateString('th-TH')} ${d.toLocaleTimeString('th-TH')}`;
+                        const row = `
+                            <tr>
+                                <td style="font-size: 0.75rem;">${displayDate}</td>
+                                <td><span class="badge ${log.action.includes('ชื่อ') ? 'badge-danger' : 'badge-info'}">${log.action}</span></td>
+                                <td style="font-size: 0.8rem;">${log.details} <br><small style="color:var(--light-text);">โดย: ${log.officer}</small></td>
+                                <td style="font-size: 0.8rem;"><code>${log.docRef}</code></td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--light-text); font-size: 0.8rem;">ไม่พบประวัติการเปลี่ยนแปลงข้อมูล</td></tr>`;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function checkRightsNHSO() {
+            const resDiv = document.getElementById('nhsoRightsResult');
+            resDiv.className = 'alert-warning-banner';
+            resDiv.style.backgroundColor = '#e2f0d9';
+            resDiv.style.borderColor = '#385723';
+            resDiv.style.color = '#385723';
+            resDiv.style.display = 'block';
+            resDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังเชื่อมต่อข้อมูลระบบตรวจสอบสิทธิ์ของสำนักงานหลักประกันสุขภาพแห่งชาติ...';
+
+            setTimeout(() => {
+                resDiv.innerHTML = `
+                    <p><strong><i class="fas fa-check-circle"></i> การเชื่อมสิทธิ์ระบบ สปสช. สำเร็จ:</strong></p>
+                    <p>ผู้ป่วยสิทธิ์: <strong>${activePatient.rights}</strong> | สถานะการประกันสิทธิ์: <strong>มีผลคุ้มครอง (Active)</strong></p>
+                    <p>หน่วยบริการปฐมภูมิ: <em>รพ.วังสามหมอ</em> | หน่วยบริการรับส่งต่อ: <em>รพ.อุดรธานี</em></p>
+                `;
+            }, 1000);
+        }
+
+        // --- VISIT MODAL & SENDING VISITS (ICD AUTOCOMPLETE) ---
+        function openVisitModal() {
+            if(!activePatient) return;
+            selectedIcd10 = [];
+            selectedIcd9 = [];
+            document.getElementById('selectedIcd10List').innerHTML = '';
+            document.getElementById('selectedIcd9List').innerHTML = '';
+            document.getElementById('icd10Input').value = '';
+            document.getElementById('icd9Input').value = '';
+            
+            document.getElementById('visitModalPatientText').innerText = `${activePatient.hn} - ${activePatient.title}${activePatient.name} ${activePatient.surname}`;
+            
+            // Set default right checkbox based on profile
+            document.querySelectorAll('.right-checkbox-card').forEach(card => {
+                card.classList.remove('selected');
+                card.querySelector('input').checked = false;
+            });
+            
+            // Map selected right to card checked
+            let profileRight = activePatient.rights;
+            let targetCard = null;
+            if(profileRight === 'ชำระเงินเอง') targetCard = document.getElementById('rightCardSelf');
+            else if(profileRight === 'ประกันสังคม') targetCard = document.getElementById('rightCardSocial');
+            else if(profileRight === 'บัตรทอง (30 บาท)') targetCard = document.getElementById('rightCardGold');
+            else if(profileRight === 'กรมบัญชีกลาง') targetCard = document.getElementById('rightCardGov');
+            else if(profileRight === 'ประกันสุขภาพเอกชน') targetCard = document.getElementById('rightCardPrivate');
+            
+            if(targetCard) {
+                targetCard.classList.add('selected');
+                targetCard.querySelector('input').checked = true;
+            }
+
+            document.getElementById('visitModal').classList.add('open');
+        }
+
+        function closeVisitModal() {
+            document.getElementById('visitModal').classList.remove('open');
+        }
+
+        function toggleRightCard(input) {
+            const card = input.closest('.right-checkbox-card');
+            if (input.checked) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        }
+
+        // ICD-10 autocomplete
+        async function lookupICD10(val) {
+            const dropdown = document.getElementById('icd10Dropdown');
+            if (val.trim().length < 1) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            const res = await fetch(`/api/icd10?q=${encodeURIComponent(val)}`);
+            const result = await res.json();
+            
+            if (result.success && result.data.length > 0) {
+                dropdown.innerHTML = '';
+                result.data.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    div.innerText = `[${item.code}] - ${item.name}`;
+                    div.onclick = () => {
+                        addIcd10Tag(item);
+                        dropdown.style.display = 'none';
+                        document.getElementById('icd10Input').value = '';
+                    };
+                    dropdown.appendChild(div);
+                });
+                dropdown.style.display = 'block';
+            } else {
+                dropdown.style.display = 'none';
+            }
+        }
+
+        function addIcd10Tag(item) {
+            if (selectedIcd10.some(i => i.code === item.code)) return;
+            selectedIcd10.push(item);
+            
+            const list = document.getElementById('selectedIcd10List');
+            const tag = document.createElement('span');
+            tag.className = 'selected-tag';
+            tag.innerHTML = `
+                [${item.code}] ${item.code} <i class="fas fa-times-circle" onclick="removeIcd10Tag('${item.code}', this)"></i>
+            `;
+            list.appendChild(tag);
+        }
+
+        function removeIcd10Tag(code, btn) {
+            selectedIcd10 = selectedIcd10.filter(i => i.code !== code);
+            btn.closest('.selected-tag').remove();
+        }
+
+        // ICD-9 autocomplete
+        async function lookupICD9(val) {
+            const dropdown = document.getElementById('icd9Dropdown');
+            if (val.trim().length < 1) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            const res = await fetch(`/api/icd9?q=${encodeURIComponent(val)}`);
+            const result = await res.json();
+            
+            if (result.success && result.data.length > 0) {
+                dropdown.innerHTML = '';
+                result.data.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    div.innerText = `[${item.code}] - ${item.name}`;
+                    div.onclick = () => {
+                        addIcd9Tag(item);
+                        dropdown.style.display = 'none';
+                        document.getElementById('icd9Input').value = '';
+                    };
+                    dropdown.appendChild(div);
+                });
+                dropdown.style.display = 'block';
+            } else {
+                dropdown.style.display = 'none';
+            }
+        }
+
+        function addIcd9Tag(item) {
+            if (selectedIcd9.some(i => i.code === item.code)) return;
+            selectedIcd9.push(item);
+            
+            const list = document.getElementById('selectedIcd9List');
+            const tag = document.createElement('span');
+            tag.className = 'selected-tag';
+            tag.innerHTML = `
+                [${item.code}] ${item.code} <i class="fas fa-times-circle" onclick="removeIcd9Tag('${item.code}', this)"></i>
+            `;
+            list.appendChild(tag);
+        }
+
+        function removeIcd9Tag(code, btn) {
+            selectedIcd9 = selectedIcd9.filter(i => i.code !== code);
+            btn.closest('.selected-tag').remove();
+        }
+
+        async function handleVisitSubmit(e) {
+            e.preventDefault();
+            
+            // Collect selected rights
+            const rights = [];
+            document.querySelectorAll('.rights-selector-grid input:checked').forEach(input => {
+                rights.push(input.value);
             });
 
-            const result = await res.json();
-            if(result.success) {
-                alert('ส่งใบเสนอราคาเรียบร้อยแล้ว!');
-            } else {
-                alert('เกิดข้อผิดพลาด: ' + result.message);
+            if (rights.length === 0) {
+                alert('กรุณาเลือกสิทธิ์ในการส่งตรวจรักษาอย่างน้อย 1 สิทธิ์');
+                return;
             }
-        } catch (err) {
-            console.error(err);
-            alert('เกิดข้อผิดพลาดในการส่งข้อมูล');
+
+            const data = {
+                hn: activePatient.hn,
+                doctor: document.getElementById('visitDoctor').value,
+                triage: document.getElementById('visitTriage').value,
+                rights: rights,
+                diagnoses: selectedIcd10,
+                procedures: selectedIcd9,
+                status: document.getElementById('visitStatus').value
+            };
+
+            try {
+                const res = await fetch('/api/patients/visit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    alert('ส่งตรวจผู้ป่วยและลงประวัติทางการแพทย์เรียบร้อยแล้ว');
+                    closeVisitModal();
+                    loadPatientProfile(activePatient.hn);
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('เซิร์ฟเวอร์ขัดข้อง');
+            }
         }
-    }
-</script>
+
+        // --- EDIT PATIENT MODAL ---
+        function openEditPatientModal() {
+            if (!activePatient) return;
+            document.getElementById('editHn').value = activePatient.hn;
+            document.getElementById('editTitle').value = activePatient.title || 'นาย';
+            document.getElementById('editName').value = activePatient.name;
+            document.getElementById('editSurname').value = activePatient.surname;
+            document.getElementById('editAddress').value = activePatient.address;
+            document.getElementById('editPhone').value = activePatient.phone;
+            document.getElementById('editRights').value = activePatient.rights;
+            document.getElementById('editDocRef').value = "ใบสำคัญการเปลี่ยนข้อมูลประวัติทั่วไป";
+            
+            document.getElementById('editPatientModal').classList.add('open');
+        }
+
+        function closeEditPatientModal() {
+            document.getElementById('editPatientModal').classList.remove('open');
+        }
+
+        async function handleEditPatientSubmit(e) {
+            e.preventDefault();
+            const hn = document.getElementById('editHn').value;
+            const data = {
+                hn: hn,
+                title: document.getElementById('editTitle').value,
+                name: document.getElementById('editName').value,
+                surname: document.getElementById('editSurname').value,
+                address: document.getElementById('editAddress').value,
+                phone: document.getElementById('editPhone').value,
+                rights: document.getElementById('editRights').value,
+                editDocRef: document.getElementById('editDocRef').value,
+                editOfficer: "พญ. วารุณี รักษ์ไทย"
+            };
+
+            try {
+                const res = await fetch('/api/patients/edit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+
+                if(result.success) {
+                    alert('บันทึกปรับปรุงแก้ไขประวัติเวชระเบียนเรียบร้อยแล้ว');
+                    closeEditPatientModal();
+                    loadPatientProfile(hn);
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + result.message);
+                }
+            } catch(err) {
+                console.error(err);
+                alert('เกิดปัญหาการเชื่อมต่อเซิร์ฟเวอร์');
+            }
+        }
+
+        // --- REGISTER TABS (MOPH VALIDATIONS & GECK SYNC) ---
+        function toggleGovernmentFields(rightVal) {
+            const container = document.getElementById('governmentFieldsContainer');
+            if (rightVal === 'กรมบัญชีกลาง') {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        function toggleConfidentialSelect(checked) {
+            const select = document.getElementById('regConfidentialRole');
+            select.style.display = checked ? 'block' : 'none';
+        }
+
+        function toggleDeceasedFields(checked) {
+            const container = document.getElementById('deceasedFieldsContainer');
+            container.style.display = checked ? 'block' : 'none';
+        }
+
+        // Thai National ID Checksum Validation MOPH 1.5
+        function validateThaiNationalID(id) {
+            if (!/^[0-9]{13}$/.test(id)) return false;
+            let sum = 0;
+            for (let i = 0; i < 12; i++) {
+                sum += parseInt(id.charAt(i)) * (13 - i);
+            }
+            let check = (11 - (sum % 11)) % 10;
+            return check === parseInt(id.charAt(12));
+        }
+
+        // Age conversion from DOB MOPH 1.2
+        function calculateAgeFromDob(dobVal) {
+            const warningToast = document.getElementById('ageLimitWarning');
+            warningToast.style.display = 'none';
+
+            if (!dobVal.includes('/')) return;
+            const parts = dobVal.split('/');
+            if (parts.length !== 3) return;
+
+            const yearBE = parseInt(parts[2]);
+            const currentYearBE = new Date().getFullYear() + 543;
+            const age = currentYearBE - yearBE;
+
+            document.getElementById('regAgeInput').value = age;
+            
+            // Old age warning (>120) MOPH 1.3
+            if (age > 120) {
+                warningToast.style.display = 'block';
+                warningToast.innerText = `⚠️ เตือน: ตรวจพบคนไข้อายุสูงผิดปกติ (${age} ปี) กรุณายืนยันความถูกต้อง`;
+            }
+        }
+
+        // DOB conversion from Age MOPH 1.4
+        function calculateDobFromAge(ageVal) {
+            const age = parseInt(ageVal);
+            if (isNaN(age) || age < 0) return;
+
+            const currentYearBE = new Date().getFullYear() + 543;
+            const estYearBE = currentYearBE - age;
+            document.getElementById('regDob').value = `00/00/${estYearBE}`;
+        }
+
+        // Mismatches title and gender warning MOPH 1.3
+        function validateGenderTitleMismatch() {
+            const title = document.getElementById('regTitle').value;
+            const gender = document.getElementById('regGender').value;
+            const toast = document.getElementById('genderTitleWarning');
+            toast.style.display = 'none';
+
+            if (!title || !gender) return;
+
+            const maleTitles = ['นาย', 'เด็กชาย', 'พระภิกษุ', 'นายแพทย์'];
+            const femaleTitles = ['นาง', 'นางสาว', 'เด็กหญิง', 'พญ.'];
+
+            if (gender === 'หญิง' && maleTitles.includes(title)) {
+                toast.style.display = 'block';
+                toast.innerText = `⚠️ คำเตือน: สิทธิเพศเป็น หญิง แต่เลือกคำนำหน้านามเป็นเพศชาย (${title}) กรุณาตรวจสอบสิทธิทะเบียนราษฎร์อีกครั้ง`;
+            } else if (gender === 'ชาย' && femaleTitles.includes(title)) {
+                toast.style.display = 'block';
+                toast.innerText = `⚠️ คำเตือน: สิทธิเพศเป็น ชาย แต่เลือกคำนำหน้านามเป็นเพศหญิง (${title}) กรุณาตรวจสอบสิทธิทะเบียนราษฎร์อีกครั้ง`;
+            }
+        }
+
+        // Civil Registry Sync Mock MOPH 1.10
+        function syncCivilRegistry() {
+            const idCard = document.getElementById('regIdCard').value.trim();
+            if (idCard.length !== 13) {
+                alert('กรุณากรอกบัตรประชาชน 13 หลักก่อนทำการดึงข้อมูล');
+                return;
+            }
+
+            if (!validateThaiNationalID(idCard)) {
+                alert('เลขบัตรประชาชนไม่ถูกต้องตามหลักทะเบียนราษฎร์');
+                return;
+            }
+
+            alert('🔄 ทำการเชื่อมต่อระบบทะเบียนราษฎร์กระทรวงมหาดไทย (Civil Registry Link) สำเร็จ. ดึงข้อมูลส่วนบุคคลเรียบร้อย.');
+            
+            // Populate
+            if (idCard === '1100100123456') {
+                document.getElementById('regTitle').value = 'นาย';
+                document.getElementById('regName').value = 'สมศักดิ์';
+                document.getElementById('regSurname').value = 'รักดี';
+                document.getElementById('regGender').value = 'ชาย';
+                document.getElementById('regDob').value = '15/08/2528';
+                document.getElementById('regAgeInput').value = '41';
+                document.getElementById('regAddress').value = '123/45 หมู่ 3 ต.หมากแข้ง อ.เมือง จ.อุดรธานี';
+                document.getElementById('regZipcode').value = '41000';
+                document.getElementById('regFatherName').value = 'นายสมบูรณ์ รักดี';
+                document.getElementById('regMotherName').value = 'นางดีใจ รักดี';
+                document.getElementById('regEmergencyContact').value = 'นางปรานี รักดี';
+                document.getElementById('regRelationship').value = 'คู่สมรส';
+                document.getElementById('regEmergencyPhone').value = '082-345-6789';
+            } else {
+                // Generate randomized mock details
+                const names = ['วิชัย', 'อนันต์', 'สุวรรณ', 'รุ่งอรุณ', 'เกรียงไกร'];
+                const surnames = ['ปัญญาดี', 'ศิลป์สุวรรณ', 'ยอดดำเนิน', 'ใจกว้างขวาง', 'สุขสันต์'];
+                const idx = Math.floor(Math.random() * names.length);
+                
+                document.getElementById('regTitle').value = 'นาย';
+                document.getElementById('regName').value = names[idx];
+                document.getElementById('regSurname').value = surnames[idx];
+                document.getElementById('regGender').value = 'ชาย';
+                document.getElementById('regDob').value = '01/01/2533';
+                document.getElementById('regAgeInput').value = '36';
+                document.getElementById('regAddress').value = '99/9 ต.หนองนาคำ อ.เมือง จ.อุดรธานี';
+                document.getElementById('regZipcode').value = '41000';
+                document.getElementById('regFatherName').value = 'นายใจจริง ปัญญาดี';
+                document.getElementById('regMotherName').value = 'นางสวยศรี ปัญญาดี';
+                document.getElementById('regEmergencyContact').value = 'นายใจจริง ปัญญาดี';
+                document.getElementById('regRelationship').value = 'บิดา';
+                document.getElementById('regEmergencyPhone').value = '085-555-5555';
+            }
+            validateGenderTitleMismatch();
+        }
+
+        // Register Submission with Duplicate warning MOPH 1.12 & 1.18
+        async function handleRegisterSubmit(e) {
+            e.preventDefault();
+
+            const idCard = document.getElementById('regIdCard').value.trim();
+            const name = document.getElementById('regName').value.trim();
+            const surname = document.getElementById('regSurname').value.trim();
+
+            if (!validateThaiNationalID(idCard)) {
+                alert('❌ ไม่สามารถบันทึกได้: เลขบัตรประจำตัวประชาชนตรวจสอบหลักการคำนวณไม่ผ่าน');
+                return;
+            }
+
+            // check duplicate first
+            const dupRes = await fetch('/api/register/check-duplicate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ idCard, name, surname })
+            });
+            const dupResult = await dupRes.json();
+
+            if (dupResult.success && dupResult.duplicate) {
+                const dupPat = dupResult.patient;
+                const verify = confirm(
+                    `⚠️ ตรวจพบข้อมูลผู้ป่วยซ้ำซ้อนในระบบ:\n` +
+                    `HN: ${dupPat.hn}\n` +
+                    `ชื่อตัว: ${dupPat.fullName}\n` +
+                    `วันเกิด: ${dupPat.dob}\n` +
+                    `มารดา: ${dupPat.motherName || 'ไม่ระบุ'}\n` +
+                    `บัตรประชาชน: ${dupPat.idCard}\n\n` +
+                    `คุณยืนยันว่าเป็นผู้ป่วยคนเดียวกันและต้องการยกเลิกการเปิด HN ใหม่หรือไม่?`
+                );
+                
+                if (verify) {
+                    // switch to search page and load the profile
+                    switchTab('search-visit');
+                    document.getElementById('patientSearchInput').value = dupPat.hn;
+                    loadPatientProfile(dupPat.hn);
+                    return;
+                }
+            }
+
+            // Prepare registration data
+            const patientData = {
+                idCard: idCard,
+                title: document.getElementById('regTitle').value,
+                name: name,
+                surname: surname,
+                gender: document.getElementById('regGender').value,
+                dob: document.getElementById('regDob').value,
+                phone: document.getElementById('regPhone').value,
+                address: document.getElementById('regAddress').value + ' ' + document.getElementById('regZipcode').value,
+                rights: document.getElementById('regRights').value,
+                bloodGroup: document.getElementById('regBloodGroup').value,
+                maritalStatus: document.getElementById('regMarital').value,
+                religion: document.getElementById('regReligion').value,
+                nationality: document.getElementById('regNationality').value,
+                ethnicity: document.getElementById('regEthnicity').value,
+                occupation: document.getElementById('regOccupation').value,
+                physical: document.getElementById('regPhysical').value,
+                fatherName: document.getElementById('regFatherName').value,
+                motherName: document.getElementById('regMotherName').value,
+                spouseName: document.getElementById('regSpouseName').value,
+                emergencyContact: document.getElementById('regEmergencyContact').value,
+                relationship: document.getElementById('regRelationship').value,
+                emergencyPhone: document.getElementById('regEmergencyPhone').value,
+                conditions: document.getElementById('regConditions').value,
+                allergy: document.getElementById('regAllergy').value,
+                isConfidential: document.getElementById('regIsConfidential').checked,
+                confidentialRole: document.getElementById('regConfidentialRole').value,
+                isDeceased: document.getElementById('regIsDeceased').checked,
+                deathDate: document.getElementById('regDeathDate').value,
+                deathCause: document.getElementById('regDeathCause').value,
+                deathPlace: document.getElementById('regDeathPlace').value,
+                deathDoctor: document.getElementById('regDeathDoctor').value
+            };
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(patientData)
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    alert(`✅ สำเร็จ! ได้รับการลงทะเบียนและจัดลำดับ HN ใหม่:\nเลขที่เวชระเบียน HN: ${result.data.hn}`);
+                    document.getElementById('patientRegisterForm').reset();
+                    // Load the newly registered user profile
+                    switchTab('search-visit');
+                    document.getElementById('patientSearchInput').value = result.data.hn;
+                    loadPatientProfile(result.data.hn);
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย');
+            }
+        }
+
+        // --- MERGE HN FUNCTIONS ---
+        async function lookupMergePatient(type) {
+            const hnInputId = type === 'master' ? 'mergeMasterHn' : 'mergeSecondaryHn';
+            const profileDivId = type === 'master' ? 'mergeMasterProfile' : 'mergeSecondaryProfile';
+            
+            const hn = document.getElementById(hnInputId).value.trim();
+            if(!hn) return alert('กรุณาระบุเลข HN');
+
+            const res = await fetch(`/api/patient/${hn}`);
+            const result = await res.json();
+            const div = document.getElementById(profileDivId);
+
+            if (result.success) {
+                const p = result.data;
+                div.innerHTML = `👤 [พบคีย์ประวัติ] ${p.name} | DOB: ${p.dob} | บัตร: ${p.idCard}`;
+            } else {
+                div.innerHTML = `❌ ไม่พบข้อมูลแฟ้มรหัสนี้`;
+            }
+        }
+
+        async function triggerMergeHNs() {
+            const masterHn = document.getElementById('mergeMasterHn').value.trim();
+            const secondaryHn = document.getElementById('mergeSecondaryHn').value.trim();
+            const docRef = document.getElementById('mergeDocRef').value.trim();
+            const officer = document.getElementById('mergeOfficer').value.trim();
+
+            if(!masterHn || !secondaryHn) return alert('กรุณาระบุ HN ทั้งหลักและรองให้ครบ');
+
+            const conf = confirm(`⚠️ ยืนยันการรวม HN:\nต้องการรวม HN: ${secondaryHn} เข้าไปใน HN: ${masterHn} หรือไม่?\nแฟ้มรองจะถูกระงับสิทธิ์ชั่วกัลปาวสาน!`);
+            if(!conf) return;
+
+            const res = await fetch('/api/patients/merge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ masterHn, secondaryHn, docRef, officer })
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                alert('✅ ยุบรวมแฟ้มประวัติสำเร็จ:\n' + result.message);
+                document.getElementById('mergeMasterHn').value = '';
+                document.getElementById('mergeSecondaryHn').value = '';
+                document.getElementById('mergeMasterProfile').innerText = '';
+                document.getElementById('mergeSecondaryProfile').innerText = '';
+                loadMergeLogs();
+            } else {
+                alert('❌ ยุบรวมล้มเหลว: ' + result.message);
+            }
+        }
+
+        async function loadMergeLogs() {
+            const res = await fetch('/api/merge-logs');
+            const result = await res.json();
+            const tbody = document.getElementById('mergeLogsTableBody');
+            tbody.innerHTML = '';
+
+            if (result.success && result.data.length > 0) {
+                result.data.reverse().forEach(log => {
+                    const row = `
+                        <tr>
+                            <td>${new Date(log.timestamp).toLocaleDateString('th-TH')}</td>
+                            <td><code>${log.masterHn}</code><br><small>${log.masterName}</small></td>
+                            <td><code>${log.secondaryHn}</code><br><small>${log.secondaryName}</small></td>
+                            <td style="text-align: center; font-weight: bold;">${log.visitsMerged}</td>
+                            <td>${log.officer}</td>
+                            <td><small>${log.docRef}</small></td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--light-text);">ไม่พบประวัติการยุบรวมเวชระเบียน</td></tr>`;
+            }
+        }
+
+        // --- MASS CASUALTY ACTIONS ---
+        async function triggerMassCasualty() {
+            const eventName = document.getElementById('mcEventName').value.trim();
+            const count = document.getElementById('mcCount').value;
+            const officer = document.getElementById('mcOfficer').value;
+
+            if(!eventName) return alert('กรุณาป้อนชื่อจุดเกิดอุบัติเหตุหมู่');
+
+            const res = await fetch('/api/patients/mass-casualty', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ eventName, count, officer })
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                alert(`🚨 เปิดแฟ้มอุบัติเหตุหมู่ด่วนสำเร็จ!\nเจเนอเรตและส่งแพทย์ห้องกู้ชีพแล้วจำนวน ${count} ราย`);
+                
+                const tbody = document.getElementById('massCasualtyTableBody');
+                tbody.innerHTML = '';
+                result.data.forEach(p => {
+                    const row = `
+                        <tr>
+                            <td><code>${p.hn}</code></td>
+                            <td><strong>${p.title}${p.name} ${p.surname}</strong></td>
+                            <td>${p.gender}</td>
+                            <td><code>${p.idCard}</code></td>
+                            <td><span class="badge badge-danger">สีแดง (สาหัส)</span> ${p.conditions}</td>
+                            <td>${p.rights}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+                
+                document.getElementById('massCasualtyResultCard').style.display = 'block';
+            } else {
+                alert('เกิดความล้มเหลวในการส่งกระบวนการห้องฉุกเฉิน');
+            }
+        }
+
+        // --- PRINT CARD LOGS ---
+        async function lookupPrintPatient() {
+            const hn = document.getElementById('printHn').value.trim();
+            if(!hn) return alert('กรุณากรอกรหัส HN');
+            
+            const res = await fetch(`/api/patient/${hn}`);
+            const result = await res.json();
+            const div = document.getElementById('printPatientProfile');
+
+            if(result.success) {
+                div.innerHTML = `👤 [คนไข้] ${result.data.name} (สิทธิ์: ${result.data.rights})`;
+            } else {
+                div.innerHTML = `❌ ไม่พบประวัติผู้ป่วย`;
+            }
+        }
+
+        async function triggerPrintReplacement() {
+            const hn = document.getElementById('printHn').value.trim();
+            const reason = document.getElementById('printReason').value;
+            
+            if(!hn) return alert('กรุณากรอกเลข HN');
+
+            const res = await fetch('/api/patients/print-card', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ hn, reason, officer: "พญ. วารุณี รักษ์ไทย" })
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                alert('🖨️ สั่งพิมพ์ใบแทนสำเร็จ! ได้รับข้อมูลประวัติในแฟ้มและบันทึกประวัติการสั่งพิมพ์เรียบร้อย.');
+                document.getElementById('printHn').value = '';
+                document.getElementById('printPatientProfile').innerText = '';
+                loadPrintLogs();
+            } else {
+                alert('ไม่สามารถสั่งพิมพ์ได้: ' + result.message);
+            }
+        }
+
+        async function loadPrintLogs() {
+            const res = await fetch('/api/print-logs');
+            const result = await res.json();
+            const tbody = document.getElementById('printLogsTableBody');
+            tbody.innerHTML = '';
+
+            if (result.success && result.data.length > 0) {
+                result.data.reverse().forEach(log => {
+                    const row = `
+                        <tr>
+                            <td>${new Date(log.timestamp).toLocaleDateString('th-TH')} ${new Date(log.timestamp).toLocaleTimeString('th-TH')}</td>
+                            <td><code>${log.hn}</code></td>
+                            <td><strong>${log.patientName}</strong></td>
+                            <td>${log.reason}</td>
+                            <td>${log.officer}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--light-text);">ไม่พบประวัติการพิมพ์ใบแทนเวชระเบียน</td></tr>`;
+            }
+        }
+
+        // --- BILLING AND ORIGINAL INTEGRATIONS ---
+        function loadBillingTable() {
+            const tbody = document.getElementById('billingItemsBody');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            billingItems.forEach((item, index) => {
+                const subtotal = item.price * item.qty;
+                const disc = parseInt(item.discount) || 0;
+                const rowTotal = subtotal * (1 - disc / 100);
+                total += rowTotal;
+
+                const row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><code>${item.id}</code></td>
+                        <td>${item.name}</td>
+                        <td style="text-align:right;">${item.price.toLocaleString()}</td>
+                        <td style="text-align:center;">${item.qty}</td>
+                        <td style="text-align:center;">${item.discount}</td>
+                        <td style="text-align:right; font-weight:bold;">${rowTotal.toLocaleString()}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            document.getElementById('billingTotalText').innerText = `${total.toLocaleString()} บาท`;
+            document.getElementById('billingSectionCard').style.display = 'block';
+        }
+
+        async function sendInvoiceToLine() {
+            if(!activePatient) return;
+            const total = billingItems.reduce((sum, item) => {
+                const sub = item.price * item.qty;
+                const disc = parseInt(item.discount) || 0;
+                return sum + (sub * (1 - disc / 100));
+            }, 0);
+
+            try {
+                const res = await fetch('/api/quotation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        hn: activePatient.hn,
+                        items: billingItems,
+                        totalAmount: total
+                    })
+                });
+                const result = await res.json();
+                
+                if (result.success) {
+                    alert('ส่งข้อมูลเสนอราคาและสิทธิ์รักษากดลิงก์เข้าแอป LINE ของคนไข้เรียบร้อยแล้ว');
+                } else {
+                    alert('ส่งเข้า LINE ไม่สำเร็จ: ' + result.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('เครือข่ายขัดข้อง');
+            }
+        }
+    </script>
 </body>
 </html>

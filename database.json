@@ -1,0 +1,70 @@
+{
+  "patients": {
+    "HN-690023": {
+      "hn": "HN-690023",
+      "idCard": "1100100123456",
+      "title": "คุณ",
+      "name": "สมศักดิ์",
+      "surname": "รักดี",
+      "gender": "ชาย",
+      "dob": "15/08/2528",
+      "phone": "081-234-5678",
+      "address": "123/45 หมู่ 3 ต.หมากแข้ง อ.เมือง จ.อุดรธานี 41000",
+      "rights": "ประกันสังคม",
+      "conditions": "ความดันโลหิตสูง",
+      "allergy": "Penicillin",
+      "bloodGroup": "O",
+      "maritalStatus": "สมรส",
+      "ethnicity": "ไทย",
+      "nationality": "ไทย",
+      "religion": "พุทธ",
+      "occupation": "รับจ้าง",
+      "physical": "รูปร่างสันทัด ผิวสองสี",
+      "fatherName": "นายสมบูรณ์ รักดี",
+      "motherName": "นางดีใจ รักดี",
+      "spouseName": "นางปรานี รักดี",
+      "emergencyContact": "นางปรานี รักดี",
+      "relationship": "คู่สมรส",
+      "emergencyPhone": "082-345-6789",
+      "isConfidential": false,
+      "confidentialRole": "staff",
+      "isDeceased": false,
+      "deathDate": "",
+      "deathCause": "",
+      "deathPlace": "",
+      "deathDoctor": "",
+      "active": true,
+      "photo": "https://api.dicebear.com/7.x/adventurer/svg?seed=Somsak"
+    }
+  },
+  "visits": [
+    {
+      "visitId": "V-000001",
+      "hn": "HN-690023",
+      "patientName": "สมศักดิ์ รักดี",
+      "date": "6/6/2569",
+      "time": "10:30",
+      "doctor": "นพ. สมชาย (โรคทั่วไป)",
+      "triage": "มาตรวจสุขภาพและรับยาลดความดันประจำเดือน (BP: 135/85 mmHg)",
+      "rights": [
+        "ประกันสังคม"
+      ],
+      "diagnoses": [
+        {
+          "code": "I10",
+          "name": "Essential (primary) hypertension (โรคความดันโลหิตสูง)"
+        }
+      ],
+      "procedures": [
+        {
+          "code": "89.52",
+          "name": "Electrocardiogram (ตรวจคลื่นไฟฟ้าหัวใจ - ECG)"
+        }
+      ],
+      "status": "เสร็จสิ้น"
+    }
+  ],
+  "logs": [],
+  "mergeLogs": [],
+  "printLogs": []
+}
