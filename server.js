@@ -201,6 +201,13 @@ app.post('/webhook', line.middleware(lineConfig), (req, res) => {
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
+// API: Get Config for Frontend (LIFF ID, etc.)
+app.get('/api/config', (req, res) => {
+    res.json({
+        liffId: process.env.LIFF_ID || ''
+    });
+});
+
 // API: Get Patient details by HN
 app.get('/api/patient/:hn', async (req, res) => {
     const hn = req.params.hn;
